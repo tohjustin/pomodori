@@ -1,0 +1,14 @@
+01. As a user I can start & pause timer.
+02. As a user I can reset the timer.
+03. As a user I should hear an alarm when the timer reaches zero.
+04. As a user I can acknowledge & stop the alarm.
+05. As a user I can configure the timer's working & break duration.
+06. As a user I can mute/unmute the app's alarm.
+
+07. As a user I want my device to to be able to vibrate when alarm is active.
+08. As a user I can enable/disable the alarm's vibrations.
+
+09. As a user I should receive a push notification when the alarm is triggered.
+10. As a user I can enable/disable push notifications.
+
+11. As a user I can use the app offline.
