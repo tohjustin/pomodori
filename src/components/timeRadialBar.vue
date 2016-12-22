@@ -1,49 +1,47 @@
 <template>
-    <div class="timeRadialBar">
-      <!-- <div class="progress-radial" v-bind:class="percentageClass"> -->
-      <div class="progress-radial" v-bind:style="radialBarStyle">
-        <div class="overlay">{{ timeString }}</div>
-      </div>
+  <div class="timeRadialBar">
+    <div class="progress-radial" v-bind:style="radialBarStyle">
+      <div class="overlay">{{ overlayText }}</div>
     </div>
+  </div>
 </template>
 
 <script>
-import * as _ from 'lodash'
-
-const radialBarPriColor = '#2196F3'
-const radialBarSecColor = '#A5D173'
-const radialBarBgColor = '#ABABAB'
-
 export default {
   name: 'time-radial-bar',
-  data () {
-    return {
-      timeLeft: 21,
-      timeTotal: 100,
-      workingMode: false
+  props: {
+    fraction: {
+      validator: function (value) { return !isNaN(value) && (value >= 0 && value <= 1) },
+      required: true
+    },
+    overlayText: {
+      type: String,
+      required: true
+    },
+    strokeColor: {
+      validator: function (value) { return /^#[0-9A-F]{6}$/i.test(value) }, // Validate if string is #XXXXXX format
+      required: true
+    },
+    trailColor: {
+      validator: function (value) { return /^#[0-9A-F]{6}$/i.test(value) }, // Validate if string is #XXXXXX format
+      required: true
     }
   },
   computed: {
-    timeString: function () {
-      return _.chain(this.timeLeft / 60).floor().padStart(2, '0') + ':' + _.chain(this.timeLeft % 60).padStart(2, '0')
-    },
     // Computes the linear-gradient values for the to display the corresponding fraction of time left
     radialBarStyle: function () {
-      let fractionLeft = this.timeLeft / this.timeTotal
-      let radialBarColor = (this.workingMode) ? radialBarPriColor : radialBarSecColor
-
-      if (fractionLeft > 0.5) {
-        // @fractionLeft = 1.00, computedAngle = -90deg
-        // @fractionLeft = 0.75, computedAngle =   0deg
-        // @fractionLeft = 0.50, computedAngle =  90deg
-        let computedAngle = 270 - (fractionLeft) * 360
-        return { 'background-image': 'linear-gradient(' + computedAngle + 'deg, ' + radialBarColor + ' 50%, transparent 50%, transparent), linear-gradient(90deg, ' + radialBarColor + ' 50%, ' + radialBarBgColor + ' 50%, ' + radialBarBgColor + ')' }
+      if (this.fraction > 0.5) {
+        // @this.fraction = 1.00, computedAngle = -90deg
+        // @this.fraction = 0.75, computedAngle =   0deg
+        // @this.fraction = 0.50, computedAngle =  90deg
+        let computedAngle = 270 - (this.fraction) * 360
+        return { 'background-image': 'linear-gradient(' + computedAngle + 'deg, ' + this.strokeColor + ' 50%, transparent 50%, transparent), linear-gradient(90deg, ' + this.strokeColor + ' 50%, ' + this.trailColor + ' 50%, ' + this.trailColor + ')' }
       } else {
-        // @fractionLeft = 0.50, computedAngle =  90deg
-        // @fractionLeft = 0.25, computedAngle = 180deg
-        // @fractionLeft = 0.00, computedAngle = 270deg
-        let computedAngle = 270 - (fractionLeft) * 360
-        return { 'background-image': 'linear-gradient(270deg, ' + radialBarBgColor + ' 50%, transparent 50%, transparent), linear-gradient(' + computedAngle + 'deg, ' + radialBarColor + ' 50%, ' + radialBarBgColor + ' 50%, ' + radialBarBgColor + ')' }
+        // @this.fraction = 0.50, computedAngle =  90deg
+        // @this.fraction = 0.25, computedAngle = 180deg
+        // @this.fraction = 0.00, computedAngle = 270deg
+        let computedAngle = 270 - (this.fraction) * 360
+        return { 'background-image': 'linear-gradient(270deg, ' + this.trailColor + ' 50%, transparent 50%, transparent), linear-gradient(' + computedAngle + 'deg, ' + this.strokeColor + ' 50%, ' + this.trailColor + ' 50%, ' + this.trailColor + ')' }
       }
     }
   }
@@ -56,12 +54,12 @@ export default {
 
 // Colors & Sizes
 $radialSize: 300px
-$radialWidth: $radialSize * 0.08
-$textSize: $radialSize * 0.3
 $textColor: #36474F
 $overlayColor: #ffffff
 
-.timeRadialBar
+// Computed Values
+$radialWidth: $radialSize * 0.08
+$textSize: $radialSize * 0.3
 
 .progress-radial
   width: $radialSize
