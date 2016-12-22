@@ -1,14 +1,14 @@
 <template>
-  <div class="timeRadialBar">
-    <div class="progress-radial" v-bind:style="radialBarStyle">
-      <div class="overlay">{{ overlayText }}</div>
+  <div class="radialBar">
+    <div class="radialBar-progess" v-bind:style="radialBarStyle">
+      <div class="radialBar-overlay">{{ overlayText }}</div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'time-radial-bar',
+  name: 'radialBar',
   props: {
     fraction: {
       validator: function (value) { return !isNaN(value) && (value >= 0 && value <= 1) },
@@ -61,13 +61,12 @@ $overlayColor: #ffffff
 $radialWidth: $radialSize * 0.08
 $textSize: $radialSize * 0.3
 
-.progress-radial
+.radialBar-progess
   width: $radialSize
   height: $radialSize
   border-radius: 50%
 
-.progress-radial .overlay
-  font-family: 'Roboto', sans-serif
+.radialBar-progess .radialBar-overlay
   color: $textColor
   position: absolute
   width: $radialSize - $radialWidth
@@ -77,6 +76,5 @@ $textSize: $radialSize * 0.3
   margin: $radialWidth / 2
   text-align: center
   line-height: $radialSize - $radialWidth
-  font-weight: medium
   font-size: $textSize
 </style>

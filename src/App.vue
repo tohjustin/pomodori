@@ -1,25 +1,24 @@
 <template>
   <div id="app">
-    <timeRadialBar></timeRadialBar>
+    <radialBar fraction="0.2" overlayText="11:42" strokeColor="#2196F3" trailColor="#ABABAB"></radialBar>
   </div>
 </template>
 
 <script>
-import timeRadialBar from './components/timeRadialBar'
+import radialBar from './components/radialBar'
 
 export default {
   name: 'app',
   components: {
-    timeRadialBar
+    radialBar
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Roboto', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-}
+<style lang="sass">
+#app
+  font-family: 'Roboto', Helvetica, Arial, sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  text-align: left
 </style>
