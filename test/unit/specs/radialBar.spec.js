@@ -39,7 +39,24 @@ describe('radialBar', () => {
     })
   })
 
-  it('should update contents correctly after changing [fraction] props', done => {
+  it('should update contents correctly after changing [fraction] props -> 0%', done => {
+    vm = mountComponent(radialBar, {
+      fraction: '1',
+      overlayText: '00:00',
+      strokeColor: '#2196F3', // rgb(33, 150, 243)
+      trailColor: '#ABABAB' // rgb(171, 171, 171)
+    })
+
+    // Set radial-bar to 0% or 0.00
+    vm.fraction = '0.0'
+    Vue.nextTick(() => {
+      expect(vm.$el.querySelector('.radialBar-progress').style.backgroundImage)
+        .to.equal('linear-gradient(270deg, rgb(171, 171, 171) 50%, transparent 50%, transparent), linear-gradient(270deg, rgb(33, 150, 243) 50%, rgb(171, 171, 171) 50%, rgb(171, 171, 171))')
+      done()
+    })
+  })
+
+  it('should update contents correctly after changing [fraction] props -> 25%', done => {
     vm = mountComponent(radialBar, {
       fraction: '0',
       overlayText: '00:00',
@@ -54,25 +71,49 @@ describe('radialBar', () => {
         .to.equal('linear-gradient(270deg, rgb(171, 171, 171) 50%, transparent 50%, transparent), linear-gradient(rgb(33, 150, 243) 50%, rgb(171, 171, 171) 50%, rgb(171, 171, 171))')
       done()
     })
+  })
 
+  it('should update contents correctly after changing [fraction] props -> 50%', done => {
+    vm = mountComponent(radialBar, {
+      fraction: '0',
+      overlayText: '00:00',
+      strokeColor: '#2196F3', // rgb(33, 150, 243)
+      trailColor: '#ABABAB' // rgb(171, 171, 171)
+    })
     // Set radial-bar to 50% or 0.50
-    vm.fraction = '0.25'
+    vm.fraction = '0.50'
     Vue.nextTick(() => {
       expect(vm.$el.querySelector('.radialBar-progress').style.backgroundImage)
         .to.equal('linear-gradient(270deg, rgb(171, 171, 171) 50%, transparent 50%, transparent), linear-gradient(90deg, rgb(33, 150, 243) 50%, rgb(171, 171, 171) 50%, rgb(171, 171, 171))')
       done()
     })
+  })
 
+  it('should update contents correctly after changing [fraction] props -> 75%', done => {
+    vm = mountComponent(radialBar, {
+      fraction: '0',
+      overlayText: '00:00',
+      strokeColor: '#2196F3', // rgb(33, 150, 243)
+      trailColor: '#ABABAB' // rgb(171, 171, 171)
+    })
     // Set radial-bar to 75% or 0.75
-    vm.fraction = '0.25'
+    vm.fraction = '0.75'
     Vue.nextTick(() => {
       expect(vm.$el.querySelector('.radialBar-progress').style.backgroundImage)
         .to.equal('linear-gradient(0deg, rgb(33, 150, 243) 50%, transparent 50%, transparent), linear-gradient(90deg, rgb(33, 150, 243) 50%, rgb(171, 171, 171) 50%, rgb(171, 171, 171))')
       done()
     })
+  })
 
+  it('should update contents correctly after changing [fraction] props -> 100%', done => {
+    vm = mountComponent(radialBar, {
+      fraction: '0',
+      overlayText: '00:00',
+      strokeColor: '#2196F3', // rgb(33, 150, 243)
+      trailColor: '#ABABAB' // rgb(171, 171, 171)
+    })
     // Set radial-bar to 100% or 1.00
-    vm.fraction = '0.25'
+    vm.fraction = '1.00'
     Vue.nextTick(() => {
       expect(vm.$el.querySelector('.radialBar-progress').style.backgroundImage)
         .to.equal('linear-gradient(-90deg, rgb(33, 150, 243) 50%, transparent 50%, transparent), linear-gradient(90deg, rgb(33, 150, 243) 50%, rgb(171, 171, 171) 50%, rgb(171, 171, 171))')
