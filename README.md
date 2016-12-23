@@ -1,5 +1,6 @@
 # pomodoro-timer-pwa
-
+[![CircleCI](https://circleci.com/gh/tohjustin/pomodoro-timer-pwa/tree/development.svg?style=shield)](https://circleci.com/gh/tohjustin/pomodoro-timer-pwa/tree/development)
+[![codecov](https://codecov.io/gh/tohjustin/pomodoro-timer-pwa/branch/development/graph/badge.svg)](https://codecov.io/gh/tohjustin/pomodoro-timer-pwa)
 > Pomodoro Timer as a Progressive Web App (PWA)
 
 ## Build Setup
