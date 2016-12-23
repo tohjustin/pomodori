@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB"></radialBar>
+    <button v-on:click="resetTimer">RESET</button>
     <button v-on:click="primaryButton.callbackFn" :style="{ 'background-color' : primaryButton.bgColor }">{{ primaryButton.text }}</button>
   </div>
 </template>
@@ -9,6 +10,7 @@
 import * as _ from 'lodash'
 import radialBar from './components/radialBar'
 
+// Helper Object to manage STATE
 const STATE = {
   WORK_START: 0,
   WORK: 1,
@@ -19,6 +21,7 @@ const STATE = {
   MODE: (inputState) => { return (inputState === STATE.WORK_START || inputState === STATE.WORK || inputState === STATE.WORK_PAUSED) ? 'WORK' : 'BREAK' },
   START: (inputState) => { return (STATE.MODE(inputState) === 'WORK') ? STATE.WORK : STATE.BREAK },
   PAUSE: (inputState) => { return (STATE.MODE(inputState) === 'WORK') ? STATE.WORK_PAUSED : STATE.BREAK_PAUSED },
+  RESET: (inputState) => { return (STATE.MODE(inputState) === 'WORK') ? STATE.WORK_START : STATE.BREAK_START },
   SWITCH: (inputState) => { return (STATE.MODE(inputState) === 'BREAK') ? STATE.WORK_START : STATE.BREAK_START }
 }
 
@@ -85,6 +88,11 @@ export default {
     pauseTimer: function () {
       this.clearWorker()
       this.state = STATE.PAUSE(this.state)
+    },
+    resetTimer: function () {
+      this.clearWorker()
+      this.state = STATE.RESET(this.state)
+      this.timeRemaining = (STATE.MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
     },
     clearWorker: function () {
       clearInterval(this.worker)
