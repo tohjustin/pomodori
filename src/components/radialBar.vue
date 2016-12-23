@@ -1,6 +1,6 @@
 <template>
   <div class="radialBar">
-    <div class="radialBar-progess" v-bind:style="radialBarStyle">
+    <div class="radialBar-progress" v-bind:style="radialBarStyle">
       <div class="radialBar-overlay">{{ overlayText }}</div>
     </div>
   </div>
@@ -61,12 +61,12 @@ $overlayColor: #ffffff
 $radialWidth: $radialSize * 0.08
 $textSize: $radialSize * 0.3
 
-.radialBar-progess
+.radialBar-progress
   width: $radialSize
   height: $radialSize
   border-radius: 50%
 
-.radialBar-progess .radialBar-overlay
+.radialBar-progress .radialBar-overlay
   color: $textColor
   position: absolute
   width: $radialSize - $radialWidth
