@@ -32,7 +32,7 @@ export default {
   },
   data () {
     return {
-      timeRemaining: 1500,
+      timeRemaining: 300,
       workDuration: 1500,
       breakDuration: 300,
       state: STATE.WORK_START,

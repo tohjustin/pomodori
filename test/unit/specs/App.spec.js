@@ -2,6 +2,7 @@
 import { mountComponent, destroyVueInstance } from '../utils.js'
 import App from 'src/App.vue'
 // var chai = require('chai')
+// var sinon = require('sinon')
 
 describe('App', () => {
   let vm = null
@@ -67,6 +68,8 @@ describe('App', () => {
     it('[overlayText] converts [timeRemaining] into a correct format', () => {
       vm = mountComponent(App, {})
       vm.timeRemaining = 0
+      vm.workDuration = 1000
+      vm.breakDuration = 1000
       expect(vm.overlayText).to.equal('00:00')
       vm.timeRemaining = 25
       expect(vm.overlayText).to.equal('00:25')
@@ -81,7 +84,7 @@ describe('App', () => {
       vm.workDuration = 100
       vm.breakDuration = 200
       const statesToTest = [ STATE.WORK_START, STATE.WORK, STATE.WORK_PAUSED ]
-      for (var i = 0; i < 3; i++) {
+      for (var i = 0; i < statesToTest.length; i++) {
         vm.state = statesToTest[i]
         vm.timeRemaining = 0
         expect(vm.fractionOfTimeLeft).to.equal(0)
@@ -97,7 +100,7 @@ describe('App', () => {
       vm.workDuration = 100
       vm.breakDuration = 200
       const statesToTest = [ STATE.BREAK_START, STATE.BREAK, STATE.BREAK_PAUSED ]
-      for (var i = 0; i < 3; i++) {
+      for (var i = 0; i < statesToTest.length; i++) {
         vm.state = statesToTest[i]
         vm.timeRemaining = 0
         expect(vm.fractionOfTimeLeft).to.equal(0)
@@ -112,32 +115,431 @@ describe('App', () => {
     it('[primaryButton] is computed correctly', () => {
       vm = mountComponent(App, {})
       const STATE = vm._getStateHelper()
+      let startTimerSpy = sinon.spy(vm, 'startTimer')
+      let pauseTimerSpy = sinon.spy(vm, 'pauseTimer')
+      expect(startTimerSpy.callCount).to.equal(0)
+      expect(pauseTimerSpy.callCount).to.equal(0)
+
       vm.state = STATE.WORK_START
       expect(vm.primaryButton).to.have.deep.property('text', 'START WORKING')
       expect(vm.primaryButton).to.have.deep.property('bgColor', '#2196F3')
+      vm.primaryButton.callbackFn()
+      expect(startTimerSpy.callCount).to.equal(1)
+      expect(pauseTimerSpy.callCount).to.equal(0)
+      startTimerSpy.reset()
+      pauseTimerSpy.reset()
+
       vm.state = STATE.WORK
       expect(vm.primaryButton).to.have.deep.property('text', 'STOP WORKING')
       expect(vm.primaryButton).to.have.deep.property('bgColor', '#2196F3')
+      vm.primaryButton.callbackFn()
+      expect(startTimerSpy.callCount).to.equal(0)
+      expect(pauseTimerSpy.callCount).to.equal(1)
+      startTimerSpy.reset()
+      pauseTimerSpy.reset()
+
       vm.state = STATE.WORK_PAUSED
       expect(vm.primaryButton).to.have.deep.property('text', 'RESUME WORKING')
       expect(vm.primaryButton).to.have.deep.property('bgColor', '#2196F3')
+      vm.primaryButton.callbackFn()
+      expect(startTimerSpy.callCount).to.equal(1)
+      expect(pauseTimerSpy.callCount).to.equal(0)
+      startTimerSpy.reset()
+      pauseTimerSpy.reset()
+
       vm.state = STATE.BREAK_START
       expect(vm.primaryButton).to.have.deep.property('text', 'START MY BREAK')
       expect(vm.primaryButton).to.have.deep.property('bgColor', '#A5D173')
+      vm.primaryButton.callbackFn()
+      expect(startTimerSpy.callCount).to.equal(1)
+      expect(pauseTimerSpy.callCount).to.equal(0)
+      startTimerSpy.reset()
+      pauseTimerSpy.reset()
+
       vm.state = STATE.BREAK
       expect(vm.primaryButton).to.have.deep.property('text', 'STOP MY BREAK')
       expect(vm.primaryButton).to.have.deep.property('bgColor', '#A5D173')
+      vm.primaryButton.callbackFn()
+      expect(startTimerSpy.callCount).to.equal(0)
+      expect(pauseTimerSpy.callCount).to.equal(1)
+      startTimerSpy.reset()
+      pauseTimerSpy.reset()
+
       vm.state = STATE.BREAK_PAUSED
       expect(vm.primaryButton).to.have.deep.property('text', 'RESUME MY BREAK')
       expect(vm.primaryButton).to.have.deep.property('bgColor', '#A5D173')
+      vm.primaryButton.callbackFn()
+      expect(startTimerSpy.callCount).to.equal(1)
+      expect(pauseTimerSpy.callCount).to.equal(0)
+      startTimerSpy.reset()
+      pauseTimerSpy.reset()
+
       vm.state = ''
       expect(vm.primaryButton).to.have.deep.property('text', 'ERROR')
       expect(vm.primaryButton).to.have.deep.property('bgColor', '#FFFFFF')
+      vm.primaryButton.callbackFn()
+      expect(startTimerSpy.callCount).to.equal(0)
+      expect(pauseTimerSpy.callCount).to.equal(0)
+      startTimerSpy.reset()
+      pauseTimerSpy.reset()
     })
   })
 
   describe('Test Component Methods', () => {
-    it('[overlayText] converts [timeRemaining] into a correct format', () => {
+    it('[startTimer] decrements [timeRemaining] every second in "WORK" mode', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+
+      const statesToTest = [ STATE.WORK_START, STATE.WORK, STATE.WORK_PAUSED ]
+      for (var i = 0; i < statesToTest.length; i++) {
+        const CLOCK = sinon.useFakeTimers()
+        // Initialize component properties/variables
+        vm.timeRemaining = 20
+        vm.workDuration = 20
+        vm.breakDuration = 10
+        vm.state = statesToTest[i]
+        vm.worker = null
+        expect(vm.state).to.equal(statesToTest[i])
+        expect(vm.worker).to.be.null
+
+        // Begin Test
+        vm.startTimer()
+        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.timeRemaining).to.equal(20)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(500)
+        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.timeRemaining).to.equal(20)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(500)
+        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.timeRemaining).to.equal(19)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(2000)
+        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.timeRemaining).to.equal(17)
+        expect(vm.worker).not.to.be.null
+
+        CLOCK.restore()
+      }
+    })
+    it('[startTimer] decrements [timeRemaining] every second in "BREAK" mode', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+
+      const statesToTest = [ STATE.BREAK_START, STATE.BREAK, STATE.BREAK_PAUSED ]
+      for (var i = 0; i < statesToTest.length; i++) {
+        const CLOCK = sinon.useFakeTimers()
+        // Initialize component properties/variables
+        vm.timeRemaining = 10
+        vm.workDuration = 20
+        vm.breakDuration = 10
+        vm.state = statesToTest[i]
+        vm.worker = null
+        expect(vm.state).to.equal(statesToTest[i])
+        expect(vm.worker).to.be.null
+
+        // Begin Test
+        vm.startTimer()
+        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.timeRemaining).to.equal(10)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(500)
+        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.timeRemaining).to.equal(10)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(500)
+        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.timeRemaining).to.equal(9)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(2000)
+        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.timeRemaining).to.equal(7)
+        expect(vm.worker).not.to.be.null
+
+        CLOCK.restore()
+      }
+    })
+    it('[startTimer] switches from "WORK" to "BREAK" mode when [timeRemaining] approaches 0', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+      const CLOCK = sinon.useFakeTimers()
+      let spy = sinon.spy(vm, 'switchMode')
+
+      // Initialize component properties/variables
+      vm.timeRemaining = 1
+      vm.workDuration = 20
+      vm.breakDuration = 10
+      vm.state = STATE.WORK
+      vm.worker = null
+      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.worker).to.be.null
+
+      // Begin Test
+      vm.startTimer()
+      expect(spy.callCount).to.equal(0)
+      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.timeRemaining).to.equal(1)
+      expect(vm.worker).not.to.be.null
+      CLOCK.tick(500)
+      expect(spy.callCount).to.equal(0)
+      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.timeRemaining).to.equal(1)
+      expect(vm.worker).not.to.be.null
+      CLOCK.tick(500)
+      expect(spy.callCount).to.equal(1)
+      expect(vm.state).to.equal(STATE.BREAK_START)
+      expect(vm.timeRemaining).to.equal(10)
+      expect(vm.worker).to.be.null
+      CLOCK.tick(2000)
+      expect(spy.callCount).to.equal(1)
+      expect(vm.state).to.equal(STATE.BREAK_START)
+      expect(vm.timeRemaining).to.equal(10)
+      expect(vm.worker).to.be.null
+
+      CLOCK.restore()
+    })
+    it('[startTimer] switches from "BREAK" to "WORK" mode when [timeRemaining] approaches 0', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+      const CLOCK = sinon.useFakeTimers()
+      let spy = sinon.spy(vm, 'switchMode')
+
+      // Initialize component properties/variables
+      vm.timeRemaining = 1
+      vm.workDuration = 20
+      vm.breakDuration = 10
+      vm.state = STATE.BREAK
+      vm.worker = null
+      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.worker).to.be.null
+
+      // Begin Test
+      vm.startTimer()
+      expect(spy.callCount).to.equal(0)
+      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.timeRemaining).to.equal(1)
+      expect(vm.worker).not.to.be.null
+      CLOCK.tick(500)
+      expect(spy.callCount).to.equal(0)
+      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.timeRemaining).to.equal(1)
+      expect(vm.worker).not.to.be.null
+      CLOCK.tick(500)
+      expect(spy.callCount).to.equal(1)
+      expect(vm.state).to.equal(STATE.WORK_START)
+      expect(vm.timeRemaining).to.equal(20)
+      expect(vm.worker).to.be.null
+      CLOCK.tick(2000)
+      expect(spy.callCount).to.equal(1)
+      expect(vm.state).to.equal(STATE.WORK_START)
+      expect(vm.timeRemaining).to.equal(20)
+      expect(vm.worker).to.be.null
+
+      // Restore Timer
+      CLOCK.restore()
+    })
+    it('[pauseTimer] stops decrementing [timeRemaining] every second in "WORK" mode', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+
+      const statesToTest = [ STATE.WORK_START, STATE.WORK, STATE.WORK_PAUSED ]
+      for (var i = 0; i < statesToTest.length; i++) {
+        const CLOCK = sinon.useFakeTimers()
+        // Initialize component properties/variables
+        vm.timeRemaining = 20
+        vm.workDuration = 20
+        vm.breakDuration = 10
+        vm.state = statesToTest[i]
+        vm.worker = null
+        expect(vm.state).to.equal(statesToTest[i])
+        expect(vm.worker).to.be.null
+
+        // Begin Test
+        vm.startTimer()
+        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.timeRemaining).to.equal(20)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(2000)
+        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.timeRemaining).to.equal(18)
+        expect(vm.worker).not.to.be.null
+
+        vm.pauseTimer()
+        expect(vm.state).to.equal(STATE.WORK_PAUSED)
+        expect(vm.timeRemaining).to.equal(18)
+        expect(vm.worker).to.be.null
+        CLOCK.tick(2000)
+        expect(vm.state).to.equal(STATE.WORK_PAUSED)
+        expect(vm.timeRemaining).to.equal(18)
+        expect(vm.worker).to.be.null
+
+        CLOCK.restore()
+      }
+    })
+    it('[pauseTimer] stops decrementing [timeRemaining] every second in "BREAK" mode', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+
+      const statesToTest = [ STATE.BREAK_START, STATE.BREAK, STATE.BREAK_PAUSED ]
+      for (var i = 0; i < statesToTest.length; i++) {
+        const CLOCK = sinon.useFakeTimers()
+        // Initialize component properties/variables
+        vm.timeRemaining = 10
+        vm.workDuration = 20
+        vm.breakDuration = 10
+        vm.state = statesToTest[i]
+        vm.worker = null
+        expect(vm.state).to.equal(statesToTest[i])
+        expect(vm.worker).to.be.null
+
+        // Begin Test
+        vm.startTimer()
+        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.timeRemaining).to.equal(10)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(3000)
+        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.timeRemaining).to.equal(7)
+        expect(vm.worker).not.to.be.null
+
+        vm.pauseTimer()
+        expect(vm.state).to.equal(STATE.BREAK_PAUSED)
+        expect(vm.timeRemaining).to.equal(7)
+        expect(vm.worker).to.be.null
+        CLOCK.tick(3000)
+        expect(vm.state).to.equal(STATE.BREAK_PAUSED)
+        expect(vm.timeRemaining).to.equal(7)
+        expect(vm.worker).to.be.null
+
+        CLOCK.restore()
+      }
+    })
+    it('[resetTimer] resets [timeRemaining] correctly in "WORK" mode', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+
+      const statesToTest = [ STATE.WORK_START, STATE.WORK, STATE.WORK_PAUSED ]
+      for (var i = 0; i < statesToTest.length; i++) {
+        const CLOCK = sinon.useFakeTimers()
+        // Initialize component properties/variables
+        vm.timeRemaining = 15
+        vm.workDuration = 20
+        vm.breakDuration = 10
+        vm.state = statesToTest[i]
+        vm.worker = null
+        expect(vm.state).to.equal(statesToTest[i])
+        expect(vm.worker).to.be.null
+
+        // Begin Test
+        vm.startTimer()
+        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.timeRemaining).to.equal(15)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(2000)
+        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.timeRemaining).to.equal(13)
+        expect(vm.worker).not.to.be.null
+
+        vm.resetTimer()
+        expect(vm.state).to.equal(STATE.WORK_START)
+        expect(vm.timeRemaining).to.equal(20)
+        expect(vm.worker).to.be.null
+        CLOCK.tick(2000)
+        expect(vm.state).to.equal(STATE.WORK_START)
+        expect(vm.timeRemaining).to.equal(20)
+        expect(vm.worker).to.be.null
+
+        CLOCK.restore()
+      }
+    })
+    it('[resetTimer] resets [timeRemaining] correctly in "BREAK" mode', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+
+      const statesToTest = [ STATE.BREAK_START, STATE.BREAK, STATE.BREAK_PAUSED ]
+      for (var i = 0; i < statesToTest.length; i++) {
+        const CLOCK = sinon.useFakeTimers()
+        // Initialize component properties/variables
+        vm.timeRemaining = 5
+        vm.workDuration = 20
+        vm.breakDuration = 10
+        vm.state = statesToTest[i]
+        vm.worker = null
+        expect(vm.state).to.equal(statesToTest[i])
+        expect(vm.worker).to.be.null
+
+        // Begin Test
+        vm.startTimer()
+        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.timeRemaining).to.equal(5)
+        expect(vm.worker).not.to.be.null
+        CLOCK.tick(3000)
+        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.timeRemaining).to.equal(2)
+        expect(vm.worker).not.to.be.null
+
+        vm.resetTimer()
+        expect(vm.state).to.equal(STATE.BREAK_START)
+        expect(vm.timeRemaining).to.equal(10)
+        expect(vm.worker).to.be.null
+        CLOCK.tick(3000)
+        expect(vm.state).to.equal(STATE.BREAK_START)
+        expect(vm.timeRemaining).to.equal(10)
+        expect(vm.worker).to.be.null
+
+        CLOCK.restore()
+      }
+    })
+    it('[switchMode] switches from "WORK" mode correctly', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+      const CLOCK = sinon.useFakeTimers()
+      // Initialize component properties/variables
+      vm.timeRemaining = 2
+      vm.workDuration = 20
+      vm.breakDuration = 10
+      vm.state = STATE.WORK
+      vm.worker = null
+      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.worker).to.be.null
+
+      // Begin Test
+      vm.startTimer()
+      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.timeRemaining).to.equal(2)
+      expect(vm.worker).not.to.be.null
+      vm.switchMode()
+      expect(vm.state).to.equal(STATE.BREAK_START)
+      expect(vm.timeRemaining).to.equal(10)
+      expect(vm.worker).to.be.null
+
+      CLOCK.restore()
+    })
+    it('[switchMode] switches from "BREAK" mode correctly', () => {
+      vm = mountComponent(App, {})
+      const STATE = vm._getStateHelper()
+      const CLOCK = sinon.useFakeTimers()
+      // Initialize component properties/variables
+      vm.timeRemaining = 5
+      vm.workDuration = 20
+      vm.breakDuration = 10
+      vm.state = STATE.BREAK
+      vm.worker = null
+      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.worker).to.be.null
+
+      // Begin Test
+      vm.startTimer()
+      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.timeRemaining).to.equal(5)
+      expect(vm.worker).not.to.be.null
+      vm.switchMode()
+      expect(vm.state).to.equal(STATE.WORK_START)
+      expect(vm.timeRemaining).to.equal(20)
+      expect(vm.worker).to.be.null
+
+      CLOCK.restore()
     })
   })
 })
