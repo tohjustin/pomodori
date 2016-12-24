@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB"></radialBar>
-    <button v-on:click="resetTimer">RESET</button>
-    <button v-on:click="primaryButton.callbackFn" :style="{ 'background-color' : primaryButton.bgColor }">{{ primaryButton.text }}</button>
+    <button class="resetButton" v-on:click="resetTimer">RESET</button>
+    <button class="primaryButton" v-on:click="primaryButton.callbackFn" :style="{ 'background-color' : primaryButton.bgColor }">{{ primaryButton.text }}</button>
   </div>
 </template>
 
@@ -18,11 +18,11 @@ const STATE = {
   BREAK_START: 3,
   BREAK: 4,
   BREAK_PAUSE: 5,
-  MODE: (inputState) => { return (inputState === STATE.WORK_START || inputState === STATE.WORK || inputState === STATE.WORK_PAUSED) ? 'WORK' : 'BREAK' },
-  START: (inputState) => { return (STATE.MODE(inputState) === 'WORK') ? STATE.WORK : STATE.BREAK },
-  PAUSE: (inputState) => { return (STATE.MODE(inputState) === 'WORK') ? STATE.WORK_PAUSED : STATE.BREAK_PAUSED },
-  RESET: (inputState) => { return (STATE.MODE(inputState) === 'WORK') ? STATE.WORK_START : STATE.BREAK_START },
-  SWITCH: (inputState) => { return (STATE.MODE(inputState) === 'BREAK') ? STATE.WORK_START : STATE.BREAK_START }
+  GET_MODE: (inputState) => { return (inputState === STATE.WORK_START || inputState === STATE.WORK || inputState === STATE.WORK_PAUSED) ? 'WORK' : 'BREAK' },
+  START: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK : STATE.BREAK },
+  PAUSE: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK_PAUSED : STATE.BREAK_PAUSED },
+  RESET: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK_START : STATE.BREAK_START },
+  SWITCH: (inputState) => { return (STATE.GET_MODE(inputState) === 'BREAK') ? STATE.WORK_START : STATE.BREAK_START }
 }
 
 export default {
@@ -32,9 +32,9 @@ export default {
   },
   data () {
     return {
-      timeRemaining: 2,
-      workDuration: 300,
-      breakDuration: 100,
+      timeRemaining: 1500,
+      workDuration: 1500,
+      breakDuration: 300,
       state: STATE.WORK_START,
       worker: null
     }
@@ -65,11 +65,15 @@ export default {
         case STATE.BREAK_PAUSED:
           return { text: 'RESUME MY BREAK', bgColor: '#A5D173', callbackFn: () => { this.startTimer() } }
         default:
-          throw new Error('Unknown State')
+          return { text: 'ERROR', bgColor: '#FFFFFF', callbackFn: () => {} } // Error
       }
     }
   },
   methods: {
+    clearWorker: function () {
+      clearInterval(this.worker)
+      this.worker = null
+    },
     startTimer: function () {
       // Check STATE
       this.state = STATE.START(this.state)
@@ -78,9 +82,7 @@ export default {
         this.worker = setInterval(() => {
           this.timeRemaining--
           if (this.timeRemaining <= 0) {
-            this.clearWorker()
-            this.state = STATE.SWITCH(this.state)
-            this.timeRemaining = (STATE.MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
+            this.switchMode()
           }
         }, 1000)
       }
@@ -92,11 +94,16 @@ export default {
     resetTimer: function () {
       this.clearWorker()
       this.state = STATE.RESET(this.state)
-      this.timeRemaining = (STATE.MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
+      this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
     },
-    clearWorker: function () {
-      clearInterval(this.worker)
-      this.worker = null
+    switchMode: function () {
+      this.clearWorker()
+      this.state = STATE.SWITCH(this.state)
+      this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
+    },
+    // Private helper method to access STATE object
+    _getStateHelper: function () {
+      return STATE
     }
   }
 }
