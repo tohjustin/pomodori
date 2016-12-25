@@ -16,14 +16,11 @@ npm run dev
 # build for production with minification
 npm run build
 
+# lint all *.js and *.vue files
+npm run lint
+
 # run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
 npm test
 ```
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+For more information see the [docs for vueify](https://github.com/vuejs/vueify).

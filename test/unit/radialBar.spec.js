@@ -1,6 +1,8 @@
-import Vue from 'vue'
-import { mountComponent, destroyVueInstance } from '../utils.js'
-import radialBar from 'src/components/radialBar.vue'
+var Vue = require('vue')
+var { mountComponent, destroyVueInstance } = require('../utils.js')
+var radialBar = require('../../src/components/radialBar.vue')
+var chai = require('chai')
+var expect = chai.expect
 
 describe('radialBar', () => {
   let vm = null

@@ -1,4 +1,4 @@
-import Vue from 'vue'
+var Vue = require('vue')
 
 /**
  * Destroys the input vue instance

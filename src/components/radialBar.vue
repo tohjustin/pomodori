@@ -50,31 +50,31 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="sass" scoped>
-@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons)
-
 // Colors & Sizes
-$radialSize: 300px
-$textColor: #36474F
-$overlayColor: #ffffff
+$textColor: #36474F;
+$overlayColor: #ffffff;
+$radialSize: 300px;
 
 // Computed Values
-$radialWidth: $radialSize * 0.08
-$textSize: $radialSize * 0.3
+$radialWidth: $radialSize * 0.08;
+$textSize: $radialSize * 0.3;
 
-.radialBar-progress
-  width: $radialSize
-  height: $radialSize
-  border-radius: 50%
+.radialBar-progress {
+  width: $radialSize;
+  height: $radialSize;
+  border-radius: 50%;
+}
 
-.radialBar-progress .radialBar-overlay
-  color: $textColor
-  position: absolute
-  width: $radialSize - $radialWidth
-  height: $radialSize - $radialWidth
-  background-color: $overlayColor
-  border-radius: 50%
-  margin: $radialWidth / 2
-  text-align: center
-  line-height: $radialSize - $radialWidth
-  font-size: $textSize
+.radialBar-progress .radialBar-overlay {
+  color: $textColor;
+  position: absolute;
+  width: $radialSize - $radialWidth;
+  height: $radialSize - $radialWidth;
+  background-color: $overlayColor;
+  border-radius: 50%;
+  margin: $radialWidth / 2;
+  text-align: center;
+  line-height: $radialSize - $radialWidth;
+  font-size: $textSize;
+}
 </style>
