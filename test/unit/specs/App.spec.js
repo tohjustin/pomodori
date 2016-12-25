@@ -6,6 +6,16 @@ import App from 'src/App.vue'
 
 describe('App', () => {
   let vm = null
+  let STATE = null
+  var mock
+
+  beforeEach(() => {
+    vm = mountComponent(App, {})
+    STATE = vm._getStateHelper()
+    // **NOTE** PhantomJS doesn't support Audio Tags so we have to stub these 2 methods that interacts w/ HTML5 Audio
+    sinon.stub(vm, '_ringAlarm')
+    sinon.stub(vm, '_stopAlarm')
+  })
 
   afterEach(() => {
     destroyVueInstance(vm)
@@ -13,8 +23,6 @@ describe('App', () => {
 
   describe('Test [STATE] helper object', () => {
     it('method STATE.GET_MODE() should be implemented correctly', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       expect(STATE.GET_MODE(STATE.WORK_START)).to.equal('WORK')
       expect(STATE.GET_MODE(STATE.WORK)).to.equal('WORK')
       expect(STATE.GET_MODE(STATE.WORK_PAUSED)).to.equal('WORK')
@@ -23,8 +31,6 @@ describe('App', () => {
       expect(STATE.GET_MODE(STATE.BREAK_PAUSED)).to.equal('BREAK')
     })
     it('method STATE.START() should be implemented correctly', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       expect(STATE.START(STATE.WORK_START)).to.equal(STATE.WORK)
       expect(STATE.START(STATE.WORK)).to.equal(STATE.WORK)
       expect(STATE.START(STATE.WORK_PAUSED)).to.equal(STATE.WORK)
@@ -33,8 +39,6 @@ describe('App', () => {
       expect(STATE.START(STATE.BREAK_PAUSED)).to.equal(STATE.BREAK)
     })
     it('method STATE.PAUSE() should be implemented correctly', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       expect(STATE.PAUSE(STATE.WORK_START)).to.equal(STATE.WORK_PAUSED)
       expect(STATE.PAUSE(STATE.WORK)).to.equal(STATE.WORK_PAUSED)
       expect(STATE.PAUSE(STATE.WORK_PAUSED)).to.equal(STATE.WORK_PAUSED)
@@ -43,8 +47,6 @@ describe('App', () => {
       expect(STATE.PAUSE(STATE.BREAK_PAUSED)).to.equal(STATE.BREAK_PAUSED)
     })
     it('method STATE.RESET() should be implemented correctly', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       expect(STATE.RESET(STATE.WORK_START)).to.equal(STATE.WORK_START)
       expect(STATE.RESET(STATE.WORK)).to.equal(STATE.WORK_START)
       expect(STATE.RESET(STATE.WORK_PAUSED)).to.equal(STATE.WORK_START)
@@ -53,8 +55,6 @@ describe('App', () => {
       expect(STATE.RESET(STATE.BREAK_PAUSED)).to.equal(STATE.BREAK_START)
     })
     it('method STATE.SWITCH() should be implemented correctly', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       expect(STATE.SWITCH(STATE.WORK_START)).to.equal(STATE.BREAK_START)
       expect(STATE.SWITCH(STATE.WORK)).to.equal(STATE.BREAK_START)
       expect(STATE.SWITCH(STATE.WORK_PAUSED)).to.equal(STATE.BREAK_START)
@@ -66,7 +66,6 @@ describe('App', () => {
 
   describe('Test Computed Properties', () => {
     it('[overlayText] converts [timeRemaining] into a correct format', () => {
-      vm = mountComponent(App, {})
       vm.timeRemaining = 0
       vm.workDuration = 1000
       vm.breakDuration = 1000
@@ -79,8 +78,6 @@ describe('App', () => {
       expect(vm.overlayText).to.equal('11:06')
     })
     it('[fractionOfTimeLeft] calculates the correct value in "WORK" mode', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       vm.workDuration = 100
       vm.breakDuration = 200
       const statesToTest = [ STATE.WORK_START, STATE.WORK, STATE.WORK_PAUSED ]
@@ -95,8 +92,6 @@ describe('App', () => {
       }
     })
     it('[fractionOfTimeLeft] calculates the correct value in "BREAK" mode', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       vm.workDuration = 100
       vm.breakDuration = 200
       const statesToTest = [ STATE.BREAK_START, STATE.BREAK, STATE.BREAK_PAUSED ]
@@ -113,8 +108,6 @@ describe('App', () => {
       }
     })
     it('[primaryButton] is computed correctly', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       let startTimerSpy = sinon.spy(vm, 'startTimer')
       let pauseTimerSpy = sinon.spy(vm, 'pauseTimer')
       expect(startTimerSpy.callCount).to.equal(0)
@@ -187,9 +180,6 @@ describe('App', () => {
 
   describe('Test Component Methods', () => {
     it('[startTimer] decrements [timeRemaining] every second in "WORK" mode', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
-
       const statesToTest = [ STATE.WORK_START, STATE.WORK, STATE.WORK_PAUSED ]
       for (var i = 0; i < statesToTest.length; i++) {
         const CLOCK = sinon.useFakeTimers()
@@ -224,9 +214,6 @@ describe('App', () => {
       }
     })
     it('[startTimer] decrements [timeRemaining] every second in "BREAK" mode', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
-
       const statesToTest = [ STATE.BREAK_START, STATE.BREAK, STATE.BREAK_PAUSED ]
       for (var i = 0; i < statesToTest.length; i++) {
         const CLOCK = sinon.useFakeTimers()
@@ -261,8 +248,6 @@ describe('App', () => {
       }
     })
     it('[startTimer] switches from "WORK" to "BREAK" mode when [timeRemaining] approaches 0', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       const CLOCK = sinon.useFakeTimers()
       let spy = sinon.spy(vm, 'switchMode')
 
@@ -300,8 +285,6 @@ describe('App', () => {
       CLOCK.restore()
     })
     it('[startTimer] switches from "BREAK" to "WORK" mode when [timeRemaining] approaches 0', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       const CLOCK = sinon.useFakeTimers()
       let spy = sinon.spy(vm, 'switchMode')
 
@@ -339,10 +322,24 @@ describe('App', () => {
       // Restore Timer
       CLOCK.restore()
     })
-    it('[pauseTimer] stops decrementing [timeRemaining] every second in "WORK" mode', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
+    it('[startTimer] stops the alarm', () => {
+      // Restore the stubbed function so we can mock it
+      vm._ringAlarm.restore()
+      vm._stopAlarm.restore()
 
+      // Setup mocks
+      mock = sinon.mock(vm)
+      var ringAlarmExpectation = mock.expects('_ringAlarm')
+      var stopAlarmExpectation = mock.expects('_stopAlarm')
+      ringAlarmExpectation.never()
+      stopAlarmExpectation.once()
+
+      // Verify it
+      vm.startTimer()
+      ringAlarmExpectation.verify()
+      stopAlarmExpectation.verify()
+    })
+    it('[pauseTimer] stops decrementing [timeRemaining] every second in "WORK" mode', () => {
       const statesToTest = [ STATE.WORK_START, STATE.WORK, STATE.WORK_PAUSED ]
       for (var i = 0; i < statesToTest.length; i++) {
         const CLOCK = sinon.useFakeTimers()
@@ -378,9 +375,6 @@ describe('App', () => {
       }
     })
     it('[pauseTimer] stops decrementing [timeRemaining] every second in "BREAK" mode', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
-
       const statesToTest = [ STATE.BREAK_START, STATE.BREAK, STATE.BREAK_PAUSED ]
       for (var i = 0; i < statesToTest.length; i++) {
         const CLOCK = sinon.useFakeTimers()
@@ -416,9 +410,6 @@ describe('App', () => {
       }
     })
     it('[resetTimer] resets [timeRemaining] correctly in "WORK" mode', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
-
       const statesToTest = [ STATE.WORK_START, STATE.WORK, STATE.WORK_PAUSED ]
       for (var i = 0; i < statesToTest.length; i++) {
         const CLOCK = sinon.useFakeTimers()
@@ -454,9 +445,6 @@ describe('App', () => {
       }
     })
     it('[resetTimer] resets [timeRemaining] correctly in "BREAK" mode', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
-
       const statesToTest = [ STATE.BREAK_START, STATE.BREAK, STATE.BREAK_PAUSED ]
       for (var i = 0; i < statesToTest.length; i++) {
         const CLOCK = sinon.useFakeTimers()
@@ -491,9 +479,24 @@ describe('App', () => {
         CLOCK.restore()
       }
     })
+    it('[resetTimer] stops the alarm', () => {
+      // Restore the stubbed function so we can mock it
+      vm._ringAlarm.restore()
+      vm._stopAlarm.restore()
+
+      // Setup mocks
+      mock = sinon.mock(vm)
+      var ringAlarmExpectation = mock.expects('_ringAlarm')
+      var stopAlarmExpectation = mock.expects('_stopAlarm')
+      ringAlarmExpectation.never()
+      stopAlarmExpectation.once()
+
+      // Verify it
+      vm.resetTimer()
+      ringAlarmExpectation.verify()
+      stopAlarmExpectation.verify()
+    })
     it('[switchMode] switches from "WORK" mode correctly', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       const CLOCK = sinon.useFakeTimers()
       // Initialize component properties/variables
       vm.timeRemaining = 2
@@ -517,8 +520,6 @@ describe('App', () => {
       CLOCK.restore()
     })
     it('[switchMode] switches from "BREAK" mode correctly', () => {
-      vm = mountComponent(App, {})
-      const STATE = vm._getStateHelper()
       const CLOCK = sinon.useFakeTimers()
       // Initialize component properties/variables
       vm.timeRemaining = 5
@@ -540,6 +541,23 @@ describe('App', () => {
       expect(vm.worker).to.be.null
 
       CLOCK.restore()
+    })
+    it('[switchMode] rings the alarm', () => {
+      // Restore the stubbed function so we can mock it
+      vm._ringAlarm.restore()
+      vm._stopAlarm.restore()
+
+      // Setup mocks
+      mock = sinon.mock(vm)
+      var ringAlarmExpectation = mock.expects('_ringAlarm')
+      var stopAlarmExpectation = mock.expects('_stopAlarm')
+      ringAlarmExpectation.once()
+      stopAlarmExpectation.never()
+
+      // Verify it
+      vm.switchMode()
+      ringAlarmExpectation.verify()
+      stopAlarmExpectation.verify()
     })
   })
 })
