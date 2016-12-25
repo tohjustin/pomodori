@@ -7,8 +7,8 @@
 </template>
 
 <script>
-var _ = require('lodash')
-var radialBar = require('./components/radialBar.vue')
+import * as _ from 'lodash'
+import radialBar from './components/radialBar'
 
 // Helper Object to manage STATE
 const STATE = {
@@ -110,12 +110,9 @@ export default {
 </script>
 
 <style lang="sass">
-@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons);
-
-#app {
-  font-family: 'Roboto', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: left;
-}
+#app
+  font-family: 'Roboto', Helvetica, Arial, sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  text-align: left
 </style>

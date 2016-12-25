@@ -1,10 +1,11 @@
-// The following line loads the standalone build of Vue instead of the runtime-only build,
-// so you don't have to do: import Vue from 'vue/dist/vue'
-// This is done with the browser options. For the config, see package.json
-var Vue = require('vue')
-var App = require('./App.vue')
+// The Vue build version to load with the `import` command
+// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import Vue from 'vue'
+import App from './App'
 
-new Vue({ // eslint-disable-line no-new
+/* eslint-disable no-new */
+new Vue({
   el: '#app',
-  render: (h) => h(App)
+  template: '<App/>',
+  components: { App }
 })

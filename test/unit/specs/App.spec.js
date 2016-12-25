@@ -1,8 +1,8 @@
-var { mountComponent, destroyVueInstance } = require('../utils.js')
-var App = require('../../src/App.vue')
-var sinon = require('sinon')
-var chai = require('chai')
-var expect = chai.expect
+// import Vue from 'vue'
+import { mountComponent, destroyVueInstance } from '../utils.js'
+import App from 'src/App.vue'
+// var chai = require('chai')
+// var sinon = require('sinon')
 
 describe('App', () => {
   let vm = null
