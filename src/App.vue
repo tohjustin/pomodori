@@ -3,6 +3,7 @@
     <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB"></radialBar>
     <button class="resetButton" v-on:click="resetTimer">RESET</button>
     <button class="primaryButton" v-on:click="primaryButton.callbackFn" :style="{ 'background-color' : primaryButton.bgColor }">{{ primaryButton.text }}</button>
+    <audio ref="audio" src="/static/Alarm.mp3" preload="auto" type="audio/mpeg"></audio>
   </div>
 </template>
 
@@ -12,12 +13,12 @@ import radialBar from './components/radialBar'
 
 // Helper Object to manage STATE
 const STATE = {
-  WORK_START: 0,
-  WORK: 1,
-  WORK_PAUSED: 2,
-  BREAK_START: 3,
-  BREAK: 4,
-  BREAK_PAUSE: 5,
+  WORK_START: 'WORK_START_STATE',
+  WORK: 'WORK_STATE',
+  WORK_PAUSED: 'WORK_PAUSED_STATE',
+  BREAK_START: 'BREAK_START_STATE',
+  BREAK: 'BREAK_STATE',
+  BREAK_PAUSE: 'BREAK_PAUSE_STATE',
   GET_MODE: (inputState) => { return (inputState === STATE.WORK_START || inputState === STATE.WORK || inputState === STATE.WORK_PAUSED) ? 'WORK' : 'BREAK' },
   START: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK : STATE.BREAK },
   PAUSE: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK_PAUSED : STATE.BREAK_PAUSED },
@@ -32,7 +33,7 @@ export default {
   },
   data () {
     return {
-      timeRemaining: 300,
+      timeRemaining: 2,
       workDuration: 1500,
       breakDuration: 300,
       state: STATE.WORK_START,
@@ -77,6 +78,7 @@ export default {
     startTimer: function () {
       // Check STATE
       this.state = STATE.START(this.state)
+      this._stopAlarm()
 
       if (this.worker === null) {
         this.worker = setInterval(() => {
@@ -95,15 +97,27 @@ export default {
       this.clearWorker()
       this.state = STATE.RESET(this.state)
       this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
+      this._stopAlarm()
     },
     switchMode: function () {
       this.clearWorker()
       this.state = STATE.SWITCH(this.state)
       this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
+      this._ringAlarm()
     },
     // Private helper method to access STATE object
     _getStateHelper: function () {
       return STATE
+    },
+    _ringAlarm: function () {
+      // Reset the sound back to t = 0 & play when mode switches
+      this.$refs.audio.currentTime = 0
+      this.$refs.audio.play()
+    },
+    _stopAlarm: function () {
+      if (!(this.$refs.audio.paused)) {
+        this.$refs.audio.pause()
+      }
     }
   }
 }
