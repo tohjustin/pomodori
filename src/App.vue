@@ -3,7 +3,7 @@
     <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB"></radialBar>
     <button class="resetButton" v-on:click="resetTimer">RESET</button>
     <button class="primaryButton" v-on:click="primaryButton.callbackFn" :style="{ 'background-color' : primaryButton.bgColor }">{{ primaryButton.text }}</button>
-    <audio ref="audio" src="/static/Alarm.mp3" preload="auto" type="audio/mpeg"></audio>
+    <audio class="audio" ref="audio" src="/static/Alarm.mp3" preload="auto" type="audio/mpeg"></audio>
   </div>
 </template>
 
@@ -110,14 +110,11 @@ export default {
       return STATE
     },
     _ringAlarm: function () {
-      // Reset the sound back to t = 0 & play when mode switches
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
     },
     _stopAlarm: function () {
-      if (!(this.$refs.audio.paused)) {
-        this.$refs.audio.pause()
-      }
+      this.$refs.audio.pause()
     }
   }
 }

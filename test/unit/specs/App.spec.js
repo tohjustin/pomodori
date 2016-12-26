@@ -560,4 +560,19 @@ describe('App', () => {
       stopAlarmExpectation.verify()
     })
   })
+
+  describe('Test Child Components', () => {
+    it('[radialBar] should render', () => {
+      expect(vm.$el.querySelector('.radialBar')).not.to.be.null
+    })
+    it('[primaryButton] should render', () => {
+      expect(vm.$el.querySelector('.primaryButton')).not.to.be.null
+    })
+    it('[resetButton] should render', () => {
+      expect(vm.$el.querySelector('.resetButton')).not.to.be.null
+    })
+    it('[audio] should render', () => {
+      expect(vm.$el.querySelector('.audio')).not.to.be.null
+    })
+  })
 })
