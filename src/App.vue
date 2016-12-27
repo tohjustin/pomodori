@@ -1,8 +1,15 @@
 <template>
   <div id="app">
-    <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB"></radialBar>
-    <button class="resetButton" v-on:click="resetTimer">RESET</button>
-    <button class="primaryButton" v-on:click="primaryButton.callbackFn" :style="{ 'background-color' : primaryButton.bgColor }">{{ primaryButton.text }}</button>
+    <div class="top">
+      <img class="logo" src="/static/logo.png">
+    </div>
+    <div class="middle">
+      <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="300"></radialBar>
+    </div>
+    <div class="bottom">
+      <mu-raised-button label="RESET" class="resetButton" v-on:click="resetTimer"/>
+      <mu-raised-button :label="primaryButton.text" class="primaryButton" v-on:click="primaryButton.callbackFn" :backgroundColor="primaryButton.bgColor"/>
+    </div>
     <audio class="audio" ref="audio" src="/static/Alarm.mp3" preload="auto" type="audio/mpeg"></audio>
   </div>
 </template>
@@ -10,6 +17,10 @@
 <script>
 import * as _ from 'lodash'
 import radialBar from './components/radialBar'
+import Vue from 'vue'
+import MuseUI from 'muse-ui'
+import 'muse-ui/dist/muse-ui.css'
+Vue.use(MuseUI)
 
 // Helper Object to manage STATE
 const STATE = {
@@ -126,4 +137,26 @@ export default {
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
   text-align: left
+
+.top
+  height: 10vh
+  padding: 3vh
+  .logo
+    max-width: 100%
+    max-height: 100%
+
+.middle
+  height: 80vh
+  .radialBar
+      height: 300px
+      width: 300px
+      margin: auto
+
+.bottom
+  height: 10vh
+  padding: 10px 0px
+  text-align: center
+  button
+    margin: 0 5px
+    font-weight: 500
 </style>

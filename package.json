@@ -58,6 +58,7 @@
     "lodash": "^4.17.2",
     "lolex": "^1.4.0",
     "mocha": "^3.1.0",
+    "muse-ui": "^2.0.0-beta.3",
     "nightwatch": "^0.9.8",
     "node-sass": "^4.1.1",
     "opn": "^4.0.2",
