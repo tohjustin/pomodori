@@ -1,7 +1,7 @@
 <template>
-  <div class="radialBar">
-    <div class="radialBar-progress" v-bind:style="radialBarStyle">
-      <div class="radialBar-overlay">{{ overlayText }}</div>
+  <div class="radialBar" v-bind:style="computedStyle.radialBar">
+    <div class="radialBar-progress" v-bind:style="radialBarArc">
+      <div class="radialBar-overlay" v-bind:style="computedStyle.overlay">{{ overlayText }}</div>
     </div>
   </div>
 </template>
@@ -25,11 +25,15 @@ export default {
     trailColor: {
       validator: function (value) { return /^#[0-9A-F]{6}$/i.test(value) }, // Validate if string is #XXXXXX format
       required: true
+    },
+    size: {
+      type: Number,
+      required: true
     }
   },
   computed: {
-    // Computes the linear-gradient values for the to display the corresponding fraction of time left
-    radialBarStyle: function () {
+    // Computes the linear-gradient values to display the corresponding [fraction] prop
+    radialBarArc: function () {
       if (this.fraction > 0.5) {
         // @this.fraction = 1.00, computedAngle = -90deg
         // @this.fraction = 0.75, computedAngle =   0deg
@@ -42,6 +46,17 @@ export default {
         // @this.fraction = 0.00, computedAngle = 270deg
         let computedAngle = 270 - (this.fraction) * 360
         return { 'background-image': 'linear-gradient(270deg, ' + this.trailColor + ' 50%, transparent 50%, transparent), linear-gradient(' + computedAngle + 'deg, ' + this.strokeColor + ' 50%, ' + this.trailColor + ' 50%, ' + this.trailColor + ')' }
+      }
+    },
+    // Compute CSS to scale the component based on the [size] prop
+    computedStyle: function () {
+      let strokeWidth = this.size * 0.08
+      let overlayTextSize = this.size * 0.3
+      let overlaySize = this.size - strokeWidth
+      let overlayMargin = strokeWidth / 2
+      return {
+        radialBar: { height: this.size + 'px', width: this.size + 'px' },
+        overlay: { height: overlaySize + 'px', width: overlaySize + 'px', 'line-height': overlaySize + 'px', margin: overlayMargin + 'px', 'font-size': overlayTextSize + 'px' }
       }
     }
   }
@@ -58,23 +73,18 @@ $textColor: #36474F
 $overlayColor: #ffffff
 
 // Computed Values
-$radialWidth: $radialSize * 0.08
+$strokeWidth: $radialSize * 0.08
 $textSize: $radialSize * 0.3
 
 .radialBar-progress
-  width: $radialSize
-  height: $radialSize
+  width: inherit
+  height: inherit
   border-radius: 50%
 
 .radialBar-progress .radialBar-overlay
   color: $textColor
   position: absolute
-  width: $radialSize - $radialWidth
-  height: $radialSize - $radialWidth
   background-color: $overlayColor
   border-radius: 50%
-  margin: $radialWidth / 2
   text-align: center
-  line-height: $radialSize - $radialWidth
-  font-size: $textSize
 </style>
