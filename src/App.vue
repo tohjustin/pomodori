@@ -4,13 +4,13 @@
       <img class="logo" src="/static/logo.png">
     </div>
     <div class="middle">
-      <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="300"></radialBar>
+      <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="radialBarSize"></radialBar>
     </div>
     <div class="bottom">
       <mu-raised-button label="RESET" class="resetButton" v-on:click="resetTimer"/>
       <mu-raised-button :label="primaryButton.text" class="primaryButton" v-on:click="primaryButton.callbackFn" :backgroundColor="primaryButton.bgColor"/>
     </div>
-    <audio class="audio" ref="audio" src="/static/Alarm.mp3" preload="auto" type="audio/mpeg"></audio>
+    <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
   </div>
 </template>
 
@@ -48,7 +48,9 @@ export default {
       workDuration: 1500,
       breakDuration: 300,
       state: STATE.WORK_START,
-      worker: null
+      worker: null,
+      // Data used for responsiveness
+      radialBarSize: 300
     }
   },
   computed: {
@@ -126,7 +128,24 @@ export default {
     },
     _stopAlarm: function () {
       this.$refs.audio.pause()
+    },
+    // whenever the document is resized, re-set the 'fullHeight' variable
+    handleResize (event) {
+      // console.log('h: ' + this.fullHeight + ', w: ' + this.fullWidth)
+      // console.log('n_h: ' + document.documentElement.clientHeight + ', n_w: ' + document.documentElement.clientWidth)
+      let newRadialBarDivHeight = 77.5 / 100 * document.documentElement.clientWidth
+      let newRadialBarDivWidth = document.documentElement.clientWidth
+
+      this.radialBarSize = _.min([newRadialBarDivHeight, newRadialBarDivWidth])
     }
+  },
+  // bind event handlers to the `_handleResize` method (defined below)
+  created: function () {
+    window.addEventListener('resize', this.handleResize)
+    this.handleResize()
+  },
+  beforeDestroy: function () {
+    window.removeEventListener('resize', this.handleResize)
   }
 }
 </script>
@@ -136,27 +155,31 @@ export default {
   font-family: 'Roboto', Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
-  text-align: left
 
 .top
   height: 10vh
-  padding: 3vh
+  padding: 3.5vh
   .logo
-    max-width: 100%
-    max-height: 100%
+    width: auto
+    height: 100%
+    min-height: 24px
 
 .middle
-  height: 80vh
+  height: 77.5vh
+  display: flex
+  justify-content: center
   .radialBar
-      height: 300px
-      width: 300px
-      margin: auto
+    align-self: center
+    margin: auto
 
 .bottom
-  height: 10vh
-  padding: 10px 0px
-  text-align: center
+  height: 12.5vh
+  display: flex
+  justify-content: center
   button
+    align-self: center
     margin: 0 5px
     font-weight: 500
+  .primaryButton
+    width: 155px
 </style>
