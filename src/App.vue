@@ -7,8 +7,8 @@
       <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="radialBarSize"></radialBar>
     </div>
     <div class="bottom">
-      <mu-raised-button label="RESET" class="resetButton" v-on:click="resetTimer"/>
-      <mu-raised-button :label="primaryButton.text" class="primaryButton" v-on:click="primaryButton.callbackFn" :backgroundColor="primaryButton.bgColor"/>
+      <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
+      <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn" />
     </div>
     <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
   </div>
@@ -64,6 +64,7 @@ export default {
         return this.timeRemaining / this.breakDuration
       }
     },
+    // Computes the data of the primaryButton at any given [state]
     primaryButton: function () {
       switch (this.state) {
         case STATE.WORK_START:
@@ -73,23 +74,18 @@ export default {
         case STATE.WORK_PAUSED:
           return { text: 'RESUME WORKING', bgColor: '#2196F3', callbackFn: () => { this.startTimer() } }
         case STATE.BREAK_START:
-          return { text: 'START MY BREAK', bgColor: '#A5D173', callbackFn: () => { this.startTimer() } }
+          return { text: 'START MY BREAK', bgColor: '#7cb342', callbackFn: () => { this.startTimer() } }
         case STATE.BREAK:
-          return { text: 'STOP MY BREAK', bgColor: '#A5D173', callbackFn: () => { this.pauseTimer() } }
+          return { text: 'STOP MY BREAK', bgColor: '#7cb342', callbackFn: () => { this.pauseTimer() } }
         case STATE.BREAK_PAUSED:
-          return { text: 'RESUME MY BREAK', bgColor: '#A5D173', callbackFn: () => { this.startTimer() } }
+          return { text: 'RESUME MY BREAK', bgColor: '#7cb342', callbackFn: () => { this.startTimer() } }
         default:
           return { text: 'ERROR', bgColor: '#FFFFFF', callbackFn: () => {} } // Error
       }
     }
   },
   methods: {
-    clearWorker: function () {
-      clearInterval(this.worker)
-      this.worker = null
-    },
     startTimer: function () {
-      // Check STATE
       this.state = STATE.START(this.state)
       this._stopAlarm()
 
@@ -103,48 +99,57 @@ export default {
       }
     },
     pauseTimer: function () {
-      this.clearWorker()
+      this._clearWorker()
       this.state = STATE.PAUSE(this.state)
     },
     resetTimer: function () {
-      this.clearWorker()
+      this._clearWorker()
       this.state = STATE.RESET(this.state)
       this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
       this._stopAlarm()
     },
     switchMode: function () {
-      this.clearWorker()
+      this._clearWorker()
       this.state = STATE.SWITCH(this.state)
       this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
       this._ringAlarm()
     },
-    // Private helper method to access STATE object
+    // [PRIVATE] Removes & clear the setInterval() function used to decrement the time
+    _clearWorker: function () {
+      clearInterval(this.worker)
+      this.worker = null
+    },
+    // [PRIVATE] helper method to access STATE object
     _getStateHelper: function () {
       return STATE
     },
+    // [PRIVATE] Controls the HTML5 Audio element to ring the alarm
     _ringAlarm: function () {
+      window.navigator.vibrate(2000)
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
     },
+    // [PRIVATE] Controls the HTML5 Audio element to stop the alarm (if it's ringing)
     _stopAlarm: function () {
       this.$refs.audio.pause()
     },
-    // whenever the document is resized, re-set the 'fullHeight' variable
-    handleResize (event) {
-      const paddingPercentage = 0.1
-      let newRadialBarDivHeight = 77.5 / 100 * document.documentElement.clientHeight
+    // [PRIVATE] Callback for WINDOW_RESIZE event, resizes the radialBar component for the new viewport dimension
+    _handleResize (event) {
+      const paddingPercentage = 0.2
+      let newRadialBarDivHeight = 75 / 100 * document.documentElement.clientHeight
       let newRadialBarDivWidth = document.documentElement.clientWidth
 
       this.radialBarSize = _.min([newRadialBarDivHeight, newRadialBarDivWidth]) * (1 - paddingPercentage)
     }
   },
-  // bind event handlers to the `_handleResize` method (defined below)
+  // Bind event handlers to the `_handleResize` method
   created: function () {
-    window.addEventListener('resize', this.handleResize)
-    this.handleResize()
+    window.addEventListener('resize', this._handleResize)
+    this._handleResize()
   },
+  // Remove event handler before the component is destroyed
   beforeDestroy: function () {
-    window.removeEventListener('resize', this.handleResize)
+    window.removeEventListener('resize', this._handleResize)
   }
 }
 </script>
@@ -157,14 +162,16 @@ export default {
 
 .top
   height: 10vh
-  padding: 3.5vh
+  padding: 2vh
+  display: flex
+  justify-content: space-between
   .logo
     width: auto
-    height: 100%
-    min-height: 24px
+    height: 30px
+    margin: 9px 10px
 
 .middle
-  height: 77.5vh
+  height: 75vh
   display: flex
   justify-content: center
   .radialBar
@@ -172,13 +179,13 @@ export default {
     margin: auto
 
 .bottom
-  height: 12.5vh
+  height: 15vh
   display: flex
   justify-content: center
   button
     align-self: center
     margin: 0 5px
     font-weight: 500
-  .primaryButton
-    width: 155px
+  .resetButton
+    color: #7cb342
 </style>
