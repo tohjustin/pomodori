@@ -142,7 +142,7 @@ describe('App', () => {
 
       vm.state = STATE.BREAK_START
       expect(vm.primaryButton).to.have.deep.property('text', 'START MY BREAK')
-      expect(vm.primaryButton).to.have.deep.property('bgColor', '#A5D173')
+      expect(vm.primaryButton).to.have.deep.property('bgColor', '#7CB342')
       vm.primaryButton.callbackFn()
       expect(startTimerSpy.callCount).to.equal(1)
       expect(pauseTimerSpy.callCount).to.equal(0)
@@ -151,7 +151,7 @@ describe('App', () => {
 
       vm.state = STATE.BREAK
       expect(vm.primaryButton).to.have.deep.property('text', 'STOP MY BREAK')
-      expect(vm.primaryButton).to.have.deep.property('bgColor', '#A5D173')
+      expect(vm.primaryButton).to.have.deep.property('bgColor', '#7CB342')
       vm.primaryButton.callbackFn()
       expect(startTimerSpy.callCount).to.equal(0)
       expect(pauseTimerSpy.callCount).to.equal(1)
@@ -160,7 +160,7 @@ describe('App', () => {
 
       vm.state = STATE.BREAK_PAUSED
       expect(vm.primaryButton).to.have.deep.property('text', 'RESUME MY BREAK')
-      expect(vm.primaryButton).to.have.deep.property('bgColor', '#A5D173')
+      expect(vm.primaryButton).to.have.deep.property('bgColor', '#7CB342')
       vm.primaryButton.callbackFn()
       expect(startTimerSpy.callCount).to.equal(1)
       expect(pauseTimerSpy.callCount).to.equal(0)
@@ -331,8 +331,12 @@ describe('App', () => {
       mock = sinon.mock(vm)
       var ringAlarmExpectation = mock.expects('_ringAlarm')
       var stopAlarmExpectation = mock.expects('_stopAlarm')
-      ringAlarmExpectation.never()
-      stopAlarmExpectation.once()
+      // ringAlarmExpectation.never()
+      // stopAlarmExpectation.once()
+
+      // We made addition calls due to workaround for mobile browsers
+      ringAlarmExpectation.once()
+      stopAlarmExpectation.twice()
 
       // Verify it
       vm.startTimer()

@@ -74,11 +74,11 @@ export default {
         case STATE.WORK_PAUSED:
           return { text: 'RESUME WORKING', bgColor: '#2196F3', callbackFn: () => { this.startTimer() } }
         case STATE.BREAK_START:
-          return { text: 'START MY BREAK', bgColor: '#7cb342', callbackFn: () => { this.startTimer() } }
+          return { text: 'START MY BREAK', bgColor: '#7CB342', callbackFn: () => { this.startTimer() } }
         case STATE.BREAK:
-          return { text: 'STOP MY BREAK', bgColor: '#7cb342', callbackFn: () => { this.pauseTimer() } }
+          return { text: 'STOP MY BREAK', bgColor: '#7CB342', callbackFn: () => { this.pauseTimer() } }
         case STATE.BREAK_PAUSED:
-          return { text: 'RESUME MY BREAK', bgColor: '#7cb342', callbackFn: () => { this.startTimer() } }
+          return { text: 'RESUME MY BREAK', bgColor: '#7CB342', callbackFn: () => { this.startTimer() } }
         default:
           return { text: 'ERROR', bgColor: '#FFFFFF', callbackFn: () => {} } // Error
       }
@@ -87,8 +87,8 @@ export default {
   methods: {
     startTimer: function () {
       // Workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
-      this.$refs.audio.play()
-      this.$refs.audio.pause()
+      this._ringAlarm()
+      this._stopAlarm()
 
       this.state = STATE.START(this.state)
       this._stopAlarm()
@@ -129,7 +129,6 @@ export default {
     },
     // [PRIVATE] Controls the HTML5 Audio element to ring the alarm
     _ringAlarm: function () {
-      window.navigator.vibrate(2000)
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
     },
