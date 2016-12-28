@@ -86,6 +86,10 @@ export default {
   },
   methods: {
     startTimer: function () {
+      // Workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
+      this.$refs.audio.play()
+      this.$refs.audio.pause()
+
       this.state = STATE.START(this.state)
       this._stopAlarm()
 
