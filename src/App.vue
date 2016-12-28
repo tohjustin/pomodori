@@ -131,12 +131,11 @@ export default {
     },
     // whenever the document is resized, re-set the 'fullHeight' variable
     handleResize (event) {
-      // console.log('h: ' + this.fullHeight + ', w: ' + this.fullWidth)
-      // console.log('n_h: ' + document.documentElement.clientHeight + ', n_w: ' + document.documentElement.clientWidth)
-      let newRadialBarDivHeight = 77.5 / 100 * document.documentElement.clientWidth
+      const paddingPercentage = 0.1
+      let newRadialBarDivHeight = 77.5 / 100 * document.documentElement.clientHeight
       let newRadialBarDivWidth = document.documentElement.clientWidth
 
-      this.radialBarSize = _.min([newRadialBarDivHeight, newRadialBarDivWidth])
+      this.radialBarSize = _.min([newRadialBarDivHeight, newRadialBarDivWidth]) * (1 - paddingPercentage)
     }
   },
   // bind event handlers to the `_handleResize` method (defined below)
