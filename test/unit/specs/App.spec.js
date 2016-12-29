@@ -15,6 +15,7 @@ describe('App', () => {
     // **NOTE** PhantomJS doesn't support Audio Tags so we have to stub these 2 methods that interacts w/ HTML5 Audio
     sinon.stub(vm, '_ringAlarm')
     sinon.stub(vm, '_stopAlarm')
+    sinon.stub(vm, '_preloadAudio')
   })
 
   afterEach(() => {
@@ -331,12 +332,8 @@ describe('App', () => {
       mock = sinon.mock(vm)
       var ringAlarmExpectation = mock.expects('_ringAlarm')
       var stopAlarmExpectation = mock.expects('_stopAlarm')
-      // ringAlarmExpectation.never()
-      // stopAlarmExpectation.once()
-
-      // We made addition calls due to workaround for mobile browsers
-      ringAlarmExpectation.once()
-      stopAlarmExpectation.twice()
+      ringAlarmExpectation.never()
+      stopAlarmExpectation.once()
 
       // Verify it
       vm.startTimer()

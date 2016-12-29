@@ -87,8 +87,7 @@ export default {
   methods: {
     startTimer: function () {
       // Workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
-      this._ringAlarm()
-      this._stopAlarm()
+      this._preloadAudio()
 
       this.state = STATE.START(this.state)
       this._stopAlarm()
@@ -134,7 +133,9 @@ export default {
     },
     // [PRIVATE] Controls the HTML5 Audio element to stop the alarm (if it's ringing)
     _stopAlarm: function () {
-      this.$refs.audio.pause()
+      if (!this.$refs.audio.paused) {
+        this.$refs.audio.pause()
+      }
     },
     // [PRIVATE] Callback for WINDOW_RESIZE event, resizes the radialBar component for the new viewport dimension
     _handleResize (event) {
@@ -143,6 +144,11 @@ export default {
       let newRadialBarDivWidth = document.documentElement.clientWidth
 
       this.radialBarSize = _.min([newRadialBarDivHeight, newRadialBarDivWidth]) * (1 - paddingPercentage)
+    },
+    // [PRIVATE] Workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
+    _preloadAudio () {
+      this._ringAlarm()
+      this._stopAlarm()
     }
   },
   // Bind event handlers to the `_handleResize` method
