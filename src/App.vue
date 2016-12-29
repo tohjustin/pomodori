@@ -137,6 +137,11 @@ export default {
         this.$refs.audio.pause()
       }
     },
+    // [PRIVATE] Workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
+    _preloadAudio () {
+      this.$refs.audio.play()
+      this.$refs.audio.pause()
+    },
     // [PRIVATE] Callback for WINDOW_RESIZE event, resizes the radialBar component for the new viewport dimension
     _handleResize (event) {
       const paddingPercentage = 0.2
@@ -144,11 +149,6 @@ export default {
       let newRadialBarDivWidth = document.documentElement.clientWidth
 
       this.radialBarSize = _.min([newRadialBarDivHeight, newRadialBarDivWidth]) * (1 - paddingPercentage)
-    },
-    // [PRIVATE] Workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
-    _preloadAudio () {
-      this._ringAlarm()
-      this._stopAlarm()
     }
   },
   // Bind event handlers to the `_handleResize` method

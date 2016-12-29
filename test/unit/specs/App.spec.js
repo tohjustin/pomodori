@@ -1,8 +1,6 @@
 // import Vue from 'vue'
 import { mountComponent, destroyVueInstance } from '../utils.js'
 import App from 'src/App.vue'
-// var chai = require('chai')
-// var sinon = require('sinon')
 
 describe('App', () => {
   let vm = null

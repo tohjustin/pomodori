@@ -5,9 +5,10 @@ import Vue from 'vue'
  * @param  {Object} vm
  */
 exports.destroyVueInstance = function (vm) {
-  vm.$el &&
-  vm.$el.parentNode &&
-  vm.$el.parentNode.removeChild(vm.$el)
+  // vm.$el &&
+  // vm.$el.parentNode &&
+  // vm.$el.parentNode.removeChild(vm.$el)
+  vm.$destroy()
 }
 
 /**
