@@ -56,7 +56,13 @@ module.exports = function (config) {
     browsers: ['PhantomJS'],
     frameworks: ['mocha', 'sinon-chai'],
     reporters: ['spec', 'coverage'],
-    files: ['./index.js'],
+    files: [
+      './index.js',
+      {pattern: './../../static/*.png', watched: false, included: false, served: true}
+    ],
+    proxies: {
+      '/static/': 'http://localhost:8080/static/'
+    },
     preprocessors: {
       './index.js': ['webpack', 'sourcemap']
     },
