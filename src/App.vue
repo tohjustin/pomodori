@@ -1,22 +1,30 @@
 <template>
-  <div id="app">
-    <div class="top">
-      <img class="logo" src="/static/logo.png">
+  <div id="App">
+    <div v-show="showSettingsView === false">
+      <div class="top">
+        <img class="logo" src="/static/logo.png">
+        <mu-icon-button v-on:click="switchToSettingsView" icon="settings"/>
+      </div>
+      <div class="middle">
+        <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="radialBarSize"></radialBar>
+      </div>
+      <div class="bottom">
+        <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
+        <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn" />
+      </div>
+      <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
     </div>
-    <div class="middle">
-      <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="radialBarSize"></radialBar>
+    <div v-show="showSettingsView === true">
+      <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowMelody="allowMelody" :allowVibration="allowVibration" v-on:change="switchToMainView"><settings>
     </div>
-    <div class="bottom">
-      <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
-      <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn" />
-    </div>
-    <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
   </div>
 </template>
 
 <script>
 import * as _ from 'lodash'
 import radialBar from './components/radialBar'
+import settings from './components/SettingsView'
+
 import Vue from 'vue'
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
@@ -38,9 +46,10 @@ const STATE = {
 }
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
-    radialBar
+    radialBar,
+    settings
   },
   data () {
     return {
@@ -49,6 +58,9 @@ export default {
       breakDuration: 300,
       state: STATE.WORK_START,
       worker: null,
+      allowMelody: false,
+      allowVibration: false,
+      showSettingsView: false,
       // Data used for responsiveness
       radialBarSize: 300
     }
@@ -96,7 +108,7 @@ export default {
         this.worker = setInterval(() => {
           this.timeRemaining--
           if (this.timeRemaining <= 0) {
-            this.switchMode()
+            this.triggerAlarm()
           }
         }, 1000)
       }
@@ -111,11 +123,25 @@ export default {
       this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
       this._stopAlarm()
     },
-    switchMode: function () {
+    triggerAlarm: function () {
       this._clearWorker()
       this.state = STATE.SWITCH(this.state)
       this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
-      this._ringAlarm()
+      if (this.allowMelody) {
+        this._ringAlarm()
+      }
+    },
+    switchToSettingsView: function () {
+      this.pauseTimer()
+      this.showSettingsView = true
+    },
+    switchToMainView: function (event) {
+      this.workDuration = event.workDuration
+      this.breakDuration = event.breakDuration
+      this.allowMelody = event.allowMelody
+      this.allowVibration = event.allowVibration
+      this.resetTimer()
+      this.showSettingsView = false
     },
     // [PRIVATE] Removes & clear the setInterval() function used to decrement the time
     _clearWorker: function () {
@@ -163,7 +189,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 #app
   font-family: 'Roboto', Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased

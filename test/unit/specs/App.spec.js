@@ -1,11 +1,9 @@
-// import Vue from 'vue'
 import { mountComponent, destroyVueInstance } from '../utils.js'
 import App from 'src/App.vue'
 
 describe('App', () => {
   let vm = null
   let STATE = null
-  var mock
 
   beforeEach(() => {
     vm = mountComponent(App, {})
@@ -248,7 +246,7 @@ describe('App', () => {
     })
     it('[startTimer] switches from "WORK" to "BREAK" mode when [timeRemaining] approaches 0', () => {
       const CLOCK = sinon.useFakeTimers()
-      let spy = sinon.spy(vm, 'switchMode')
+      let spy = sinon.spy(vm, 'triggerAlarm')
 
       // Initialize component properties/variables
       vm.timeRemaining = 1
@@ -285,7 +283,7 @@ describe('App', () => {
     })
     it('[startTimer] switches from "BREAK" to "WORK" mode when [timeRemaining] approaches 0', () => {
       const CLOCK = sinon.useFakeTimers()
-      let spy = sinon.spy(vm, 'switchMode')
+      let spy = sinon.spy(vm, 'triggerAlarm')
 
       // Initialize component properties/variables
       vm.timeRemaining = 1
@@ -327,7 +325,7 @@ describe('App', () => {
       vm._stopAlarm.restore()
 
       // Setup mocks
-      mock = sinon.mock(vm)
+      var mock = sinon.mock(vm)
       var ringAlarmExpectation = mock.expects('_ringAlarm')
       var stopAlarmExpectation = mock.expects('_stopAlarm')
       ringAlarmExpectation.never()
@@ -484,7 +482,7 @@ describe('App', () => {
       vm._stopAlarm.restore()
 
       // Setup mocks
-      mock = sinon.mock(vm)
+      var mock = sinon.mock(vm)
       var ringAlarmExpectation = mock.expects('_ringAlarm')
       var stopAlarmExpectation = mock.expects('_stopAlarm')
       ringAlarmExpectation.never()
@@ -495,7 +493,7 @@ describe('App', () => {
       ringAlarmExpectation.verify()
       stopAlarmExpectation.verify()
     })
-    it('[switchMode] switches from "WORK" mode correctly', () => {
+    it('[triggerAlarm] switches from "WORK" mode correctly', () => {
       const CLOCK = sinon.useFakeTimers()
       // Initialize component properties/variables
       vm.timeRemaining = 2
@@ -511,14 +509,14 @@ describe('App', () => {
       expect(vm.state).to.equal(STATE.WORK)
       expect(vm.timeRemaining).to.equal(2)
       expect(vm.worker).not.to.be.null
-      vm.switchMode()
+      vm.triggerAlarm()
       expect(vm.state).to.equal(STATE.BREAK_START)
       expect(vm.timeRemaining).to.equal(10)
       expect(vm.worker).to.be.null
 
       CLOCK.restore()
     })
-    it('[switchMode] switches from "BREAK" mode correctly', () => {
+    it('[triggerAlarm] switches from "BREAK" mode correctly', () => {
       const CLOCK = sinon.useFakeTimers()
       // Initialize component properties/variables
       vm.timeRemaining = 5
@@ -534,29 +532,83 @@ describe('App', () => {
       expect(vm.state).to.equal(STATE.BREAK)
       expect(vm.timeRemaining).to.equal(5)
       expect(vm.worker).not.to.be.null
-      vm.switchMode()
+      vm.triggerAlarm()
       expect(vm.state).to.equal(STATE.WORK_START)
       expect(vm.timeRemaining).to.equal(20)
       expect(vm.worker).to.be.null
 
       CLOCK.restore()
     })
-    it('[switchMode] rings the alarm', () => {
+    it('[triggerAlarm] rings the alarm if [allowMelody] is true', () => {
       // Restore the stubbed function so we can mock it
       vm._ringAlarm.restore()
       vm._stopAlarm.restore()
 
       // Setup mocks
-      mock = sinon.mock(vm)
+      var mock = sinon.mock(vm)
       var ringAlarmExpectation = mock.expects('_ringAlarm')
       var stopAlarmExpectation = mock.expects('_stopAlarm')
       ringAlarmExpectation.once()
       stopAlarmExpectation.never()
 
       // Verify it
-      vm.switchMode()
+      vm.allowMelody = true
+      vm.triggerAlarm()
       ringAlarmExpectation.verify()
       stopAlarmExpectation.verify()
+    })
+    it('[triggerAlarm] rings the alarm if [allowMelody] is false', () => {
+      // Restore the stubbed function so we can mock it
+      vm._ringAlarm.restore()
+      vm._stopAlarm.restore()
+
+      // Setup mocks
+      var mock = sinon.mock(vm)
+      var ringAlarmExpectation = mock.expects('_ringAlarm')
+      var stopAlarmExpectation = mock.expects('_stopAlarm')
+      ringAlarmExpectation.never()
+      stopAlarmExpectation.never()
+
+      // Verify it
+      vm.allowMelody = false
+      vm.triggerAlarm()
+      ringAlarmExpectation.verify()
+      stopAlarmExpectation.verify()
+    })
+    it('[switchToSettingsView] pauses timer', () => {
+      let spy = sinon.spy(vm, 'pauseTimer')
+      vm.switchToSettingsView()
+      expect(spy).to.have.been.calledOnce
+    })
+    it('[switchToSettingsView] changes [showSettingsView] to true', () => {
+      vm.showSettingsView = false
+      vm.switchToSettingsView()
+      expect(vm.showSettingsView).to.be.true
+      vm.switchToSettingsView()
+      expect(vm.showSettingsView).to.be.true
+    })
+    it('[switchToMainView] updates variable based on $emit values', () => {
+      vm.workDuration = 1
+      vm.breakDuration = 1
+      vm.allowMelody = false
+      vm.allowVibration = false
+      vm.$refs.settings.$emit('change', { workDuration: 10, breakDuration: 10, allowMelody: true, allowVibration: true })
+      expect(vm.workDuration).to.equal(10)
+      expect(vm.breakDuration).to.equal(10)
+      expect(vm.allowMelody).to.be.true
+      expect(vm.allowVibration).to.be.true
+    })
+    it('[switchToMainView] resets timer', () => {
+      let spy = sinon.spy(vm, 'resetTimer')
+      vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowMelody: false, allowVibration: false })
+      expect(spy).to.have.been.calledOnce
+    })
+    it('[switchToMainView] changes [showSettingsView] to false', () => {
+      vm.showSettingsView = true
+      vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowMelody: false, allowVibration: false })
+      expect(vm.showSettingsView).to.be.false
+      vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowMelody: false, allowVibration: false })
+      expect(vm.showSettingsView).to.be.false
     })
   })
 
