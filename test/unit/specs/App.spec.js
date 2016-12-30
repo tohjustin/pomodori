@@ -616,6 +616,51 @@ describe('App', () => {
       expect(vm.showSettingsView).to.be.false
     })
   })
+  describe('Test Component Private Helper Methods', () => {
+    it('[_ringAlarm] resets audio file & play', () => {
+      var spy = sinon.spy()
+      var spy2 = sinon.spy()
+      let audioObject = vm.$refs.audio
+      audioObject.play = spy
+      audioObject.pause = spy2
+      audioObject.currentTime = 9999
+      vm._ringAlarm()
+      expect(audioObject.currentTime).to.equal(0)
+      expect(spy).to.have.been.calledOnce
+      expect(spy2).to.have.callCount(0)
+    })
+
+    it('[_stopAlarm] pauses audio', () => {
+      var spy = sinon.spy()
+      var spy2 = sinon.spy()
+      let audioObject = vm.$refs.audio
+      audioObject.play = spy
+      audioObject.pause = spy2
+
+      audioObject.paused = false
+      vm._stopAlarm()
+      expect(spy).to.have.callCount(0)
+      expect(spy2).to.have.been.calledOnce
+
+      spy.reset()
+      spy2.reset()
+      audioObject.paused = true
+      vm._stopAlarm()
+      expect(spy).to.have.callCount(0)
+      expect(spy2).to.have.callCount(0)
+    })
+
+    it('[_preloadAudio] play & pause audio', () => {
+      var spy = sinon.spy()
+      var spy2 = sinon.spy()
+      let audioObject = vm.$refs.audio
+      audioObject.play = spy
+      audioObject.pause = spy2
+      vm._preloadAudio()
+      expect(spy).to.have.been.calledOnce
+      expect(spy2).to.have.been.calledOnce
+    })
+  })
 
   describe('Test Child Components', () => {
     it('[radialBar] should render', () => {
