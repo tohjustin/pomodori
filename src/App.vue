@@ -190,7 +190,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-#app
+#App
   font-family: 'Roboto', Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
@@ -202,8 +202,8 @@ export default {
   justify-content: space-between
   .logo
     width: auto
-    height: 30px
-    margin: 9px 10px
+    height: 24px
+    margin: 12px 10px
 
 .middle
   height: 75vh
