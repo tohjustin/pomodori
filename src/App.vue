@@ -12,7 +12,7 @@
         <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
         <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn" />
       </div>
-      <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
+      <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg" loop></audio>
     </div>
     <div v-show="showSettingsView === true">
       <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowMelody="allowMelody" :allowVibration="allowVibration" v-on:change="switchToMainView"><settings>
