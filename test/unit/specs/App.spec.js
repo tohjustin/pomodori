@@ -9,9 +9,14 @@ describe('App', () => {
     vm = mountComponent(App, {})
     STATE = vm._getStateHelper()
     // **NOTE** PhantomJS doesn't support Audio Tags so we have to stub these 2 methods that interacts w/ HTML5 Audio
-    sinon.stub(vm, '_ringAlarm')
-    sinon.stub(vm, '_stopAlarm')
-    sinon.stub(vm, '_preloadAudio')
+    // sinon.stub(vm, '_ringAlarm')
+    // sinon.stub(vm, '_stopAlarm')
+    // sinon.stub(vm, '_preloadAudio')
+
+    // Alternate way to stub to improve test coverage
+    let audioObject = vm.$refs.audio
+    audioObject.play = () => {}
+    audioObject.pause = () => {}
   })
 
   afterEach(() => {
@@ -321,8 +326,8 @@ describe('App', () => {
     })
     it('[startTimer] stops the alarm', () => {
       // Restore the stubbed function so we can mock it
-      vm._ringAlarm.restore()
-      vm._stopAlarm.restore()
+      // vm._ringAlarm.restore()
+      // vm._stopAlarm.restore()
 
       // Setup mocks
       var mock = sinon.mock(vm)
@@ -478,8 +483,8 @@ describe('App', () => {
     })
     it('[resetTimer] stops the alarm', () => {
       // Restore the stubbed function so we can mock it
-      vm._ringAlarm.restore()
-      vm._stopAlarm.restore()
+      // vm._ringAlarm.restore()
+      // vm._stopAlarm.restore()
 
       // Setup mocks
       var mock = sinon.mock(vm)
@@ -541,8 +546,8 @@ describe('App', () => {
     })
     it('[triggerAlarm] rings the alarm if [allowMelody] is true', () => {
       // Restore the stubbed function so we can mock it
-      vm._ringAlarm.restore()
-      vm._stopAlarm.restore()
+      // vm._ringAlarm.restore()
+      // vm._stopAlarm.restore()
 
       // Setup mocks
       var mock = sinon.mock(vm)
@@ -559,8 +564,8 @@ describe('App', () => {
     })
     it('[triggerAlarm] rings the alarm if [allowMelody] is false', () => {
       // Restore the stubbed function so we can mock it
-      vm._ringAlarm.restore()
-      vm._stopAlarm.restore()
+      // vm._ringAlarm.restore()
+      // vm._stopAlarm.restore()
 
       // Setup mocks
       var mock = sinon.mock(vm)
