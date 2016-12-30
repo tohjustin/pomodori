@@ -32,7 +32,7 @@
 import Vue from 'vue'
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
-import 'muse-ui/dist/theme-carbon.css' // 使用 carbon 主题
+// import 'muse-ui/dist/theme-carbon.css' // 使用 carbon 主题
 Vue.use(MuseUI)
 
 export default {
@@ -98,23 +98,37 @@ export default {
 }
 </script>
 
+
 <!--  Style cannot be scoped since we're trying to overwrite Muse-UI component's CSS -->
-<style lang="sass">
+<style lang="less">
+@import "./../muse-ui-theme/vars.less";
+@import "./../muse-ui-theme/theme-vars.less";
+@import "./../muse-ui-theme/theme.less";
+
 // Overwrite Muse-UI component css
-.mu-appbar
-  padding-left: 16px !important
-  padding-right: 16px !important
-.mu-appbar .backButton
-  padding-left: 0px !important
-  padding-right: 0px !important
-  width: auto !important
-.mu-appbar-title
-  padding-left: 32px !important
-.mu-list
-  padding: 0px !important
-.mu-item
-  padding-top: 10px !important
-  padding-bottom: 10px !important
-.mu-slider
-  margin-bottom: 0px !important
+@primaryColor: @blue500 !important;
+@darkerPrimaryColor: @blue700 !important;
+
+.mu-appbar {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+.mu-appbar .backButton {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  width: auto !important;
+}
+.mu-appbar-title {
+  padding-left: 32px !important;
+}
+.mu-list {
+  padding: 0px !important;
+}
+.mu-item {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+.mu-slider {
+  margin-bottom: 0px !important;
+}
 </style>
