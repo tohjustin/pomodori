@@ -20,8 +20,8 @@
         <mu-switch slot="right" :value="allowMelody" v-on:change="updateAllowMelody"/>
       </mu-list-item>
       <mu-divider/>
-      <mu-list-item title="Vibrate on alarm">
-        <mu-switch slot="right" :value="allowVibration" v-on:change="updateAllowVibration"/>
+      <mu-list-item title="Vibrate on alarm" :describeText="vibrationNotSupported ? 'Your browser does not support vibration' : 'Your browser supports vibration'">
+        <mu-switch slot="right" :value="vibrationNotSupported ? false : allowVibration" v-on:change="updateAllowVibration" :disabled="vibrationNotSupported"/>
       </mu-list-item>
       <mu-divider/>
     </mu-list>
@@ -93,6 +93,10 @@ export default {
     breakDurationText: function () {
       // let minuteCount = this.breakDuration / 60
       return `Break Duration (${this.myBreakDuration / 60} min)`
+    },
+    vibrationNotSupported: function () {
+      navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate
+      return !('vibrate' in navigator && navigator.vibrate !== undefined)
     }
   }
 }

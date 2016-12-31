@@ -12,7 +12,7 @@
         <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
         <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn" />
       </div>
-      <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg" loop></audio>
+      <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
     </div>
     <div v-show="showSettingsView === true">
       <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowMelody="allowMelody" :allowVibration="allowVibration" v-on:change="switchToMainView"><settings>
@@ -53,14 +53,18 @@ export default {
   },
   data () {
     return {
-      timeRemaining: 2,
+      // App State
+      timeRemaining: 1,
+      state: STATE.WORK_START,
+      showSettingsView: false,
+      // App Settings
       workDuration: 1500,
       breakDuration: 300,
-      state: STATE.WORK_START,
-      worker: null,
-      allowMelody: false,
-      allowVibration: false,
-      showSettingsView: false,
+      allowMelody: true,
+      allowVibration: true,
+      // Worker objects for our timer
+      timerWorker: null,
+      alarmWorker: null,
       // Data used for responsiveness
       radialBarSize: 300
     }
@@ -104,8 +108,8 @@ export default {
       this.state = STATE.START(this.state)
       this._stopAlarm()
 
-      if (this.worker === null) {
-        this.worker = setInterval(() => {
+      if (this.timerWorker === null) {
+        this.timerWorker = setInterval(() => {
           this.timeRemaining--
           if (this.timeRemaining <= 0) {
             this.triggerAlarm()
@@ -143,32 +147,44 @@ export default {
       this.resetTimer()
       this.showSettingsView = false
     },
-    // [PRIVATE] Removes & clear the setInterval() function used to decrement the time
+    // [PRIVATE] terminates the timerWorker
     _clearWorker: function () {
-      clearInterval(this.worker)
-      this.worker = null
+      clearInterval(this.timerWorker)
+      this.timerWorker = null
     },
     // [PRIVATE] helper method to access STATE object
     _getStateHelper: function () {
       return STATE
     },
-    // [PRIVATE] Controls the HTML5 Audio element to ring the alarm
+    // [PRIVATE] triggers the alarmWorker (audio + vibration)
     _ringAlarm: function () {
-      this.$refs.audio.currentTime = 0
-      this.$refs.audio.play()
+      let ring = () => {
+        if (this.allowMelody) {
+          this.$refs.audio.currentTime = 0
+          this.$refs.audio.play()
+        }
+        if (this.allowVibration && navigator.vibrate) {
+          navigator.vibrate(1500)
+        }
+      }
+      this.alarmWorker = setInterval(ring, 4000)
+      ring()
     },
-    // [PRIVATE] Controls the HTML5 Audio element to stop the alarm (if it's ringing)
+    // [PRIVATE] terminates the alarmWorker (audio + vibration)
     _stopAlarm: function () {
-      if (!this.$refs.audio.paused) {
-        this.$refs.audio.pause()
+      clearInterval(this.alarmWorker)
+      this.alarmWorker = null
+      this.$refs.audio.pause()
+      if (navigator.vibrate) {
+        navigator.vibrate(0)
       }
     },
-    // [PRIVATE] Workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
+    // [PRIVATE] workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
     _preloadAudio () {
       this.$refs.audio.play()
       this.$refs.audio.pause()
     },
-    // [PRIVATE] Callback for WINDOW_RESIZE event, resizes the radialBar component for the new viewport dimension
+    // [PRIVATE] callback for WINDOW_RESIZE event, resizes the radialBar component for the new viewport dimension
     _handleResize (event) {
       const paddingPercentage = 0.2
       let newRadialBarDivHeight = 75 / 100 * document.documentElement.clientHeight
@@ -177,12 +193,14 @@ export default {
       this.radialBarSize = _.min([newRadialBarDivHeight, newRadialBarDivWidth]) * (1 - paddingPercentage)
     }
   },
-  // Bind event handlers to the `_handleResize` method
   created: function () {
+    // enable vibration support
+    navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate
+    // bind event handlers to the `_handleResize` method
     window.addEventListener('resize', this._handleResize)
     this._handleResize()
   },
-  // Remove event handler before the component is destroyed
+  // remove event handler before the component is destroyed
   beforeDestroy: function () {
     window.removeEventListener('resize', this._handleResize)
   }

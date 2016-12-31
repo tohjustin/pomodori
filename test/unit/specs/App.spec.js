@@ -17,6 +17,7 @@ describe('App', () => {
     let audioObject = vm.$refs.audio
     audioObject.play = () => {}
     audioObject.pause = () => {}
+    navigator.vibrate = () => {}
   })
 
   afterEach(() => {
@@ -190,27 +191,27 @@ describe('App', () => {
         vm.workDuration = 20
         vm.breakDuration = 10
         vm.state = statesToTest[i]
-        vm.worker = null
+        vm.timerWorker = null
         expect(vm.state).to.equal(statesToTest[i])
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         // Begin Test
         vm.startTimer()
         expect(vm.state).to.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(20)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(500)
         expect(vm.state).to.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(20)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(500)
         expect(vm.state).to.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(19)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(2000)
         expect(vm.state).to.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(17)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
 
         CLOCK.restore()
       }
@@ -224,27 +225,27 @@ describe('App', () => {
         vm.workDuration = 20
         vm.breakDuration = 10
         vm.state = statesToTest[i]
-        vm.worker = null
+        vm.timerWorker = null
         expect(vm.state).to.equal(statesToTest[i])
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         // Begin Test
         vm.startTimer()
         expect(vm.state).to.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(10)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(500)
         expect(vm.state).to.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(10)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(500)
         expect(vm.state).to.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(9)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(2000)
         expect(vm.state).to.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(7)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
 
         CLOCK.restore()
       }
@@ -258,31 +259,31 @@ describe('App', () => {
       vm.workDuration = 20
       vm.breakDuration = 10
       vm.state = STATE.WORK
-      vm.worker = null
+      vm.timerWorker = null
       expect(vm.state).to.equal(STATE.WORK)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
 
       // Begin Test
       vm.startTimer()
       expect(spy.callCount).to.equal(0)
       expect(vm.state).to.equal(STATE.WORK)
       expect(vm.timeRemaining).to.equal(1)
-      expect(vm.worker).not.to.be.null
+      expect(vm.timerWorker).not.to.be.null
       CLOCK.tick(500)
       expect(spy.callCount).to.equal(0)
       expect(vm.state).to.equal(STATE.WORK)
       expect(vm.timeRemaining).to.equal(1)
-      expect(vm.worker).not.to.be.null
+      expect(vm.timerWorker).not.to.be.null
       CLOCK.tick(500)
       expect(spy.callCount).to.equal(1)
       expect(vm.state).to.equal(STATE.BREAK_START)
       expect(vm.timeRemaining).to.equal(10)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
       CLOCK.tick(2000)
       expect(spy.callCount).to.equal(1)
       expect(vm.state).to.equal(STATE.BREAK_START)
       expect(vm.timeRemaining).to.equal(10)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
 
       CLOCK.restore()
     })
@@ -295,31 +296,31 @@ describe('App', () => {
       vm.workDuration = 20
       vm.breakDuration = 10
       vm.state = STATE.BREAK
-      vm.worker = null
+      vm.timerWorker = null
       expect(vm.state).to.equal(STATE.BREAK)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
 
       // Begin Test
       vm.startTimer()
       expect(spy.callCount).to.equal(0)
       expect(vm.state).to.equal(STATE.BREAK)
       expect(vm.timeRemaining).to.equal(1)
-      expect(vm.worker).not.to.be.null
+      expect(vm.timerWorker).not.to.be.null
       CLOCK.tick(500)
       expect(spy.callCount).to.equal(0)
       expect(vm.state).to.equal(STATE.BREAK)
       expect(vm.timeRemaining).to.equal(1)
-      expect(vm.worker).not.to.be.null
+      expect(vm.timerWorker).not.to.be.null
       CLOCK.tick(500)
       expect(spy.callCount).to.equal(1)
       expect(vm.state).to.equal(STATE.WORK_START)
       expect(vm.timeRemaining).to.equal(20)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
       CLOCK.tick(2000)
       expect(spy.callCount).to.equal(1)
       expect(vm.state).to.equal(STATE.WORK_START)
       expect(vm.timeRemaining).to.equal(20)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
 
       // Restore Timer
       CLOCK.restore()
@@ -350,28 +351,28 @@ describe('App', () => {
         vm.workDuration = 20
         vm.breakDuration = 10
         vm.state = statesToTest[i]
-        vm.worker = null
+        vm.timerWorker = null
         expect(vm.state).to.equal(statesToTest[i])
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         // Begin Test
         vm.startTimer()
         expect(vm.state).to.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(20)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(2000)
         expect(vm.state).to.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(18)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
 
         vm.pauseTimer()
         expect(vm.state).to.equal(STATE.WORK_PAUSED)
         expect(vm.timeRemaining).to.equal(18)
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
         CLOCK.tick(2000)
         expect(vm.state).to.equal(STATE.WORK_PAUSED)
         expect(vm.timeRemaining).to.equal(18)
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         CLOCK.restore()
       }
@@ -385,28 +386,28 @@ describe('App', () => {
         vm.workDuration = 20
         vm.breakDuration = 10
         vm.state = statesToTest[i]
-        vm.worker = null
+        vm.timerWorker = null
         expect(vm.state).to.equal(statesToTest[i])
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         // Begin Test
         vm.startTimer()
         expect(vm.state).to.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(10)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(3000)
         expect(vm.state).to.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(7)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
 
         vm.pauseTimer()
         expect(vm.state).to.equal(STATE.BREAK_PAUSED)
         expect(vm.timeRemaining).to.equal(7)
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
         CLOCK.tick(3000)
         expect(vm.state).to.equal(STATE.BREAK_PAUSED)
         expect(vm.timeRemaining).to.equal(7)
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         CLOCK.restore()
       }
@@ -420,28 +421,28 @@ describe('App', () => {
         vm.workDuration = 20
         vm.breakDuration = 10
         vm.state = statesToTest[i]
-        vm.worker = null
+        vm.timerWorker = null
         expect(vm.state).to.equal(statesToTest[i])
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         // Begin Test
         vm.startTimer()
         expect(vm.state).to.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(15)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(2000)
         expect(vm.state).to.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(13)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
 
         vm.resetTimer()
         expect(vm.state).to.equal(STATE.WORK_START)
         expect(vm.timeRemaining).to.equal(20)
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
         CLOCK.tick(2000)
         expect(vm.state).to.equal(STATE.WORK_START)
         expect(vm.timeRemaining).to.equal(20)
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         CLOCK.restore()
       }
@@ -455,28 +456,28 @@ describe('App', () => {
         vm.workDuration = 20
         vm.breakDuration = 10
         vm.state = statesToTest[i]
-        vm.worker = null
+        vm.timerWorker = null
         expect(vm.state).to.equal(statesToTest[i])
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         // Begin Test
         vm.startTimer()
         expect(vm.state).to.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(5)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(3000)
         expect(vm.state).to.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(2)
-        expect(vm.worker).not.to.be.null
+        expect(vm.timerWorker).not.to.be.null
 
         vm.resetTimer()
         expect(vm.state).to.equal(STATE.BREAK_START)
         expect(vm.timeRemaining).to.equal(10)
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
         CLOCK.tick(3000)
         expect(vm.state).to.equal(STATE.BREAK_START)
         expect(vm.timeRemaining).to.equal(10)
-        expect(vm.worker).to.be.null
+        expect(vm.timerWorker).to.be.null
 
         CLOCK.restore()
       }
@@ -505,19 +506,19 @@ describe('App', () => {
       vm.workDuration = 20
       vm.breakDuration = 10
       vm.state = STATE.WORK
-      vm.worker = null
+      vm.timerWorker = null
       expect(vm.state).to.equal(STATE.WORK)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
 
       // Begin Test
       vm.startTimer()
       expect(vm.state).to.equal(STATE.WORK)
       expect(vm.timeRemaining).to.equal(2)
-      expect(vm.worker).not.to.be.null
+      expect(vm.timerWorker).not.to.be.null
       vm.triggerAlarm()
       expect(vm.state).to.equal(STATE.BREAK_START)
       expect(vm.timeRemaining).to.equal(10)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
 
       CLOCK.restore()
     })
@@ -528,19 +529,19 @@ describe('App', () => {
       vm.workDuration = 20
       vm.breakDuration = 10
       vm.state = STATE.BREAK
-      vm.worker = null
+      vm.timerWorker = null
       expect(vm.state).to.equal(STATE.BREAK)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
 
       // Begin Test
       vm.startTimer()
       expect(vm.state).to.equal(STATE.BREAK)
       expect(vm.timeRemaining).to.equal(5)
-      expect(vm.worker).not.to.be.null
+      expect(vm.timerWorker).not.to.be.null
       vm.triggerAlarm()
       expect(vm.state).to.equal(STATE.WORK_START)
       expect(vm.timeRemaining).to.equal(20)
-      expect(vm.worker).to.be.null
+      expect(vm.timerWorker).to.be.null
 
       CLOCK.restore()
     })
@@ -617,45 +618,116 @@ describe('App', () => {
     })
   })
   describe('Test Component Private Helper Methods', () => {
-    it('[_ringAlarm] resets audio file & play', () => {
-      var spy = sinon.spy()
-      var spy2 = sinon.spy()
-      let audioObject = vm.$refs.audio
-      audioObject.play = spy
-      audioObject.pause = spy2
-      audioObject.currentTime = 9999
+    it('[_ringAlarm] does not play audio when [allowMelody] is false & vice versa', () => {
+      let audio = vm.$refs.audio
+      let spy = sinon.spy()
+      let spy2 = sinon.spy()
+      let spy3 = sinon.spy()
+      audio.play = spy
+      audio.pause = spy2
+      navigator.vibrate = spy3
+
+      vm.alarmWorker = null
+      vm.allowMelody = false
+      vm.allowVibration = false
+
       vm._ringAlarm()
-      expect(audioObject.currentTime).to.equal(0)
-      expect(spy).to.have.been.calledOnce
-      expect(spy2).to.have.callCount(0)
-    })
-
-    it('[_stopAlarm] pauses audio', () => {
-      var spy = sinon.spy()
-      var spy2 = sinon.spy()
-      let audioObject = vm.$refs.audio
-      audioObject.play = spy
-      audioObject.pause = spy2
-
-      audioObject.paused = false
-      vm._stopAlarm()
       expect(spy).to.have.callCount(0)
-      expect(spy2).to.have.been.calledOnce
+      expect(spy2).to.have.callCount(0)
+      expect(spy3).to.have.callCount(0)
+      expect(vm.alarmWorker).not.to.be.null
 
       spy.reset()
       spy2.reset()
-      audioObject.paused = true
-      vm._stopAlarm()
+      spy3.reset()
+      clearInterval(vm.alarmWorker)
+
+      vm.alarmWorker = null
+      vm.allowMelody = true
+      vm.allowVibration = false
+
+      vm._ringAlarm()
+      expect(spy).to.have.callCount(1)
+      expect(spy2).to.have.callCount(0)
+      expect(spy3).to.have.callCount(0)
+      expect(vm.alarmWorker).not.to.be.null
+    })
+
+    it('[_ringAlarm] does not vibrate when [allowVibration] is false & vice versa', () => {
+      let audio = vm.$refs.audio
+      let spy = sinon.spy()
+      let spy2 = sinon.spy()
+      let spy3 = sinon.spy()
+      audio.play = spy
+      audio.pause = spy2
+      navigator.vibrate = spy3
+
+      vm.alarmWorker = null
+      vm.allowMelody = false
+      vm.allowVibration = false
+
+      vm._ringAlarm()
       expect(spy).to.have.callCount(0)
       expect(spy2).to.have.callCount(0)
+      expect(spy3).to.have.callCount(0)
+      expect(vm.alarmWorker).not.to.be.null
+
+      spy.reset()
+      spy2.reset()
+      spy3.reset()
+      clearInterval(vm.alarmWorker)
+
+      vm.alarmWorker = null
+      vm.allowMelody = false
+      vm.allowVibration = true
+
+      vm._ringAlarm()
+      expect(spy).to.have.callCount(0)
+      expect(spy2).to.have.callCount(0)
+      expect(spy3).to.have.callCount(1)
+      expect(spy3).not.to.have.been.calledWith(0)
+      expect(vm.alarmWorker).not.to.be.null
+    })
+
+    it('[_stopAlarm] terminates alarmWorker', () => {
+      let audio = vm.$refs.audio
+      var spy = sinon.spy()
+      var spy2 = sinon.spy()
+      let spy3 = sinon.spy()
+      audio.play = spy
+      audio.pause = spy2
+      navigator.vibrate = spy3
+
+      vm._stopAlarm()
+      expect(spy).to.have.callCount(0)
+      expect(spy2).to.have.callCount(1)
+      expect(spy3).to.have.callCount(1)
+      expect(spy3).to.have.been.calledWith(0)
+      expect(vm.alarmWorker).to.be.null
+
+      spy.reset()
+      spy2.reset()
+      spy3.reset()
+      let temp = navigator.vibrate
+      navigator.vibrate = undefined
+
+      vm._stopAlarm()
+      expect(spy).to.have.callCount(0)
+      expect(spy2).to.have.callCount(1)
+      expect(spy3).to.have.callCount(0)
+      expect(vm.alarmWorker).to.be.null
+
+      // restore navigator.vibrate
+      navigator.vibrate = temp
     })
 
     it('[_preloadAudio] play & pause audio', () => {
+      let audio = vm.$refs.audio
       var spy = sinon.spy()
       var spy2 = sinon.spy()
-      let audioObject = vm.$refs.audio
-      audioObject.play = spy
-      audioObject.pause = spy2
+      audio.play = spy
+      audio.pause = spy2
+
       vm._preloadAudio()
       expect(spy).to.have.been.calledOnce
       expect(spy2).to.have.been.calledOnce

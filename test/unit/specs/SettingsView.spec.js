@@ -12,6 +12,9 @@ describe('SettingsView', () => {
       allowMelody: false,
       allowVibration: false
     })
+
+    // Alternate way to stub to improve test coverage
+    navigator.vibrate = () => {}
   })
 
   afterEach(() => {
