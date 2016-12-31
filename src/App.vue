@@ -6,29 +6,28 @@
         <mu-icon-button v-on:click="switchToSettingsView" icon="settings"/>
       </div>
       <div class="middle">
-        <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="radialBarSize"></radialBar>
+        <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="radialBarSize"/>
       </div>
       <div class="bottom">
         <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
-        <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn" />
+        <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn"/>
       </div>
       <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
     </div>
     <div v-show="showSettingsView === true">
-      <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowMelody="allowMelody" :allowVibration="allowVibration" v-on:change="switchToMainView"><settings>
+      <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowMelody="allowMelody" :allowVibration="allowVibration" v-on:change="switchToMainView"/>
     </div>
   </div>
 </template>
 
 <script>
-import * as _ from 'lodash'
-import radialBar from './components/radialBar'
-import settings from './components/SettingsView'
-
 import Vue from 'vue'
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
 Vue.use(MuseUI)
+import * as _ from 'lodash'
+import radialBar from './components/radialBar'
+import settings from './components/SettingsView'
 
 // Helper Object to manage STATE
 const STATE = {
@@ -196,6 +195,7 @@ export default {
   created: function () {
     // enable vibration support
     navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate
+
     // bind event handlers to the `_handleResize` method
     window.addEventListener('resize', this._handleResize)
     this._handleResize()
@@ -207,7 +207,7 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 #App
   font-family: 'Roboto', Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased
