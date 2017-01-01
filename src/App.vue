@@ -56,7 +56,7 @@ export default {
   data () {
     return {
       // App State
-      timeRemaining: 1,
+      timeRemaining: 1500,
       state: STATE.WORK_START,
       showSettingsView: false,
       // App Settings
