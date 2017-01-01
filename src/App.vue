@@ -1,6 +1,6 @@
 <template>
   <div id="App">
-    <div v-show="showSettingsView === false">
+    <div class="MainView">
       <div class="top">
         <img class="logo" src="/static/logo.png">
         <mu-icon-button v-on:click="switchToSettingsView" icon="settings"/>
@@ -14,9 +14,11 @@
       </div>
       <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
     </div>
-    <div v-show="showSettingsView === true">
-      <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowMelody="allowMelody" :allowVibration="allowVibration" v-on:change="switchToMainView"/>
-    </div>
+    <transition name="slide">
+      <div class="SettingsView" v-show="showSettingsView">
+        <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowMelody="allowMelody" :allowVibration="allowVibration" v-on:change="switchToMainView"/>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -25,6 +27,7 @@ import Vue from 'vue'
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
 Vue.use(MuseUI)
+
 import * as _ from 'lodash'
 import radialBar from './components/radialBar'
 import settings from './components/SettingsView'
@@ -213,7 +216,7 @@ export default {
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
 
-.top
+.MainView .top
   height: 10vh
   padding: 2vh
   display: flex
@@ -223,7 +226,7 @@ export default {
     height: 24px
     margin: 12px 10px
 
-.middle
+.MainView .middle
   height: 75vh
   display: flex
   justify-content: center
@@ -231,7 +234,7 @@ export default {
     align-self: center
     margin: auto
 
-.bottom
+.MainView .bottom
   height: 15vh
   display: flex
   justify-content: center
@@ -241,4 +244,19 @@ export default {
     font-weight: 500
   .resetButton
     color: #7cb342
+
+.SettingsView
+  height: 100vh
+  width: 100vw
+  position: absolute
+  top: 0px
+  left: 0px
+  z-index: 100
+  background-color: white
+
+// SettingsView Transition Styling
+.slide-enter-active, .slide-leave-active
+  transition: all 0.25s ease
+.slide-enter, .slide-leave-active
+  transform: translateX(100vw)
 </style>
