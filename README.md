@@ -8,9 +8,12 @@
 </p>
 <p align="center">
   <span>
-  <a href="https://material.io/guidelines/">Material design</a> flavoured pomodoro timer built as a Progressive Web App
+    <a href="https://material.io/guidelines/">Material design</a> flavoured pomodoro timer built as a Progressive Web App
+  </span>
   <br>
-  Powered by <a href="https://vuejs.org/">Vue 2.0</a> & <a href="https://museui.github.io/">Muse-UI</a>.</span>
+  <span>
+    Powered by <a href="https://vuejs.org/">Vue 2.0</a> + <a href="https://museui.github.io/">Muse-UI</a>
+  </span>
 </p>
 
 ## Prerequisites
