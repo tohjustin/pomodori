@@ -1,11 +1,17 @@
-<p align="center"><a href="https://pomodori-pwa.firebaseapp.com/" target="_blank"><img src="https://pomodori-pwa.firebaseapp.com/static/logo.png"></a></p>
+<p align="center">
+  <a href="https://pomodori-pwa.firebaseapp.com/" target="_blank"><img src="https://pomodori-pwa.firebaseapp.com/static/logo.png"></a>
+</p>
 <p align="center">
   <a href="https://circleci.com/gh/tohjustin/pomodori/tree/development"><img src="https://circleci.com/gh/tohjustin/pomodori/tree/development.svg?style=shield" alt="CircleCI Build Status"></a>
   <a href="https://codecov.io/gh/tohjustin/pomodori"><img src="https://codecov.io/gh/tohjustin/pomodori/branch/development/graph/badge.svg" alt="codecov"></a>
   <a href="https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tohjustin/pomodori&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/f274b8dcf80749ca87618ea340efe0ac" alt="Codacy Badge"></a>
 </p>
-
-Pomodori is a simple pomodoro timer built as a [Material design](https://material.io/guidelines/) flavoured Progressive Web App, powered by [Vue 2.0](https://vuejs.org/) & [Muse-UI](https://museui.github.io/).
+<p align="center">
+  <span>
+  <a href="https://material.io/guidelines/">Material design</a> flavoured pomodoro timer built as a Progressive Web App
+  <br>
+  Powered by <a href="https://vuejs.org/">Vue 2.0</a> & <a href="https://museui.github.io/">Muse-UI</a>.</span>
+</p>
 
 ## Prerequisites
 
