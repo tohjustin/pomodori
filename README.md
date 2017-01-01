@@ -11,7 +11,7 @@
 </p>
 <p align="center">
   <span>
-    <a href="https://material.io/guidelines/">Material design</a> flavoured pomodoro timer built as a Progressive Web App
+    Material-design flavoured pomodoro timer built as a Progressive Web App
   </span>
   <br>
   <span>
@@ -30,7 +30,7 @@
 ``` bash
 git clone https://github.com/tohjustin/pomodori.git
 cd ./pomodori
-yarn # you can use "npm install" instead
+npm install # you can use "yarn" instead
 ```
 
 ## Getting Started
