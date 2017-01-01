@@ -1,10 +1,13 @@
 <p align="center">
-  <a href="https://pomodori-pwa.firebaseapp.com/" target="_blank"><img src="https://pomodori-pwa.firebaseapp.com/static/logo.png"></a>
+  <a href="https://pomodori-pwa.firebaseapp.com/" target="_blank"><img src="https://github.com/tohjustin/pomodori/blob/master/static/icons/icon-192x192.png"></a>
+  <br>
+  <a href="https://pomodori-pwa.firebaseapp.com/" target="_blank"><img height="50" src="https://github.com/tohjustin/pomodori/blob/master/static/logo.png"></a>
 </p>
 <p align="center">
-  <a href="https://circleci.com/gh/tohjustin/pomodori/tree/development"><img src="https://circleci.com/gh/tohjustin/pomodori/tree/development.svg?style=shield" alt="CircleCI Build Status"></a>
-  <a href="https://codecov.io/gh/tohjustin/pomodori"><img src="https://codecov.io/gh/tohjustin/pomodori/branch/development/graph/badge.svg" alt="codecov"></a>
-  <a href="https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tohjustin/pomodori&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/f274b8dcf80749ca87618ea340efe0ac" alt="Codacy Badge"></a>
+  <a href="https://circleci.com/gh/tohjustin/pomodori/tree/master"><img src="https://circleci.com/gh/tohjustin/pomodori/tree/master.svg?style=shield" alt="CircleCI Build Status"/></a>
+  <a href="https://codecov.io/gh/tohjustin/pomodori"><img src="https://codecov.io/gh/tohjustin/pomodori/branch/master/graph/badge.svg" alt="Codecov" /></a>
+  <a href="https://www.codacy.com/app/tohjustin/pomodori?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tohjustin/pomodori&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/ab08c87aa6a3467496591b87ad77f8e8"/></a>
+  <a href="https://github.com/tohjustin/pomodori/blob/master/LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg"/></a>
 </p>
 <p align="center">
   <span>
@@ -54,6 +57,4 @@ This project's build setup is scaffolded by the [vue-cli](https://github.com/vue
 
 ## License
 
-[MIT](http://opensource.org/licenses/MIT)
-
-Copyright (c) 2016-2017 [Justin Toh](https://github.com/tohjustin)
+MIT © [Justin Toh](https://github.com/tohjustin)
