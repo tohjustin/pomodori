@@ -18,6 +18,8 @@
 
 ## Prerequisites
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ab08c87aa6a3467496591b87ad77f8e8)](https://www.codacy.com/app/tohjustin/pomodori?utm_source=github.com&utm_medium=referral&utm_content=tohjustin/pomodori&utm_campaign=badger)
+
 - [Node.js](https://nodejs.org/en/download/)
 - [npm](https://docs.npmjs.com/getting-started/installing-node)
 - [Yarn](https://yarnpkg.com/en/docs/install#mac-tab) (optional, alternative to npm)
