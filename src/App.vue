@@ -1,5 +1,5 @@
 <template>
-  <div id="App">
+  <div id="app">
     <div class="MainView">
       <div class="top">
         <img class="logo" src="/static/logo.png">
@@ -48,18 +48,18 @@ const STATE = {
 }
 
 export default {
-  name: 'App',
+  name: 'app',
   components: {
     radialBar,
     settings
   },
   data () {
     return {
-      // App State
+      // app State
       timeRemaining: 1500,
       state: STATE.WORK_START,
       showSettingsView: false,
-      // App Settings
+      // app Settings
       workDuration: 1500,
       breakDuration: 300,
       allowMelody: true,
@@ -211,7 +211,7 @@ export default {
 </script>
 
 <style lang="sass">
-#App
+#app
   font-family: 'Roboto', Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale

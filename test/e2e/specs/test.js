@@ -11,9 +11,10 @@ module.exports = {
     browser
       .url(devServer)
       .waitForElementVisible('#app', 5000)
-      .assert.elementPresent('.hello')
-      .assert.containsText('h1', 'Welcome to Your Vue.js App')
-      .assert.elementCount('img', 1)
+      .assert.elementPresent('.MainView')
+      .assert.elementPresent('.SettingsView')
+      .assert.elementCount('button', 4) // "Reset", "Start/Pause", "Settings", "Back" Button
+      .assert.elementCount('img', 1) // "Pomodori" Logo
       .end()
   }
 }
