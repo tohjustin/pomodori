@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- Not all browsers implement the manifest yet, however the <meta> tags will help bridge that gap -->
+    <link rel="manifest" href="./static/manifest.json">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Pomodori">
+    <meta name="apple-mobile-web-app-title" content="Pomodori">
+    <meta name="theme-color" content="#2196F3">
+    <meta name="msapplication-navbutton-color" content="#2196F3">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#2196F3">
+    <meta name="msapplication-starturl" content="/">
+
     <link rel="icon" type="image/png" sizes="512x512" href="/static/icons/icon-512x512.png">
     <link rel="icon" type="image/png" sizes="384x384" href="/static/icons/icon-384x384.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/icon-192x192.png">
