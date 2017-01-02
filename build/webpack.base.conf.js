@@ -3,6 +3,7 @@ var config = require('../config')
 var utils = require('./utils')
 var projectRoot = path.resolve(__dirname, '../')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
+var ManifestPlugin = require('webpack-manifest-plugin')
 
 var env = process.env.NODE_ENV
 // check env & config/index.js to decide whether to enable CSS source maps for the
@@ -93,6 +94,9 @@ module.exports = {
     ]
   },
   plugins: [
+    new ManifestPlugin({
+      fileName: 'asset-manifest.json'
+    }),
     new CopyWebpackPlugin([
       // { from: './src/sw.js' },
       { from: './src/manifest.json' },
