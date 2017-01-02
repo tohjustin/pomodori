@@ -133,9 +133,7 @@ export default {
       this._clearWorker()
       this.state = STATE.SWITCH(this.state)
       this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
-      if (this.allowMelody) {
-        this._ringAlarm()
-      }
+      this._ringAlarm()
     },
     switchToSettingsView: function () {
       this.pauseTimer()
