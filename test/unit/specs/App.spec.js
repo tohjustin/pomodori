@@ -545,41 +545,34 @@ describe('App', () => {
 
       CLOCK.restore()
     })
-    it('[triggerAlarm] rings the alarm if [allowMelody] is true', () => {
+    it('[triggerAlarm] executes [_ringAlarm] regardless of [allowMelody]/[allowVibration] settings', () => {
       // Restore the stubbed function so we can mock it
       // vm._ringAlarm.restore()
       // vm._stopAlarm.restore()
+      const settings = [
+        { allowMelody: false, allowVibration: false },
+        { allowMelody: true, allowVibration: true },
+        { allowMelody: true, allowVibration: false },
+        { allowMelody: true, allowVibration: true }
+      ]
 
-      // Setup mocks
-      var mock = sinon.mock(vm)
-      var ringAlarmExpectation = mock.expects('_ringAlarm')
-      var stopAlarmExpectation = mock.expects('_stopAlarm')
-      ringAlarmExpectation.once()
-      stopAlarmExpectation.never()
+      for (let i = 0; i < settings.length; i++) {
+        // Setup mocks
+        let mock = sinon.mock(vm)
+        let ringAlarmExpectation = mock.expects('_ringAlarm')
+        let stopAlarmExpectation = mock.expects('_stopAlarm')
+        ringAlarmExpectation.once()
+        stopAlarmExpectation.never()
 
-      // Verify it
-      vm.allowMelody = true
-      vm.triggerAlarm()
-      ringAlarmExpectation.verify()
-      stopAlarmExpectation.verify()
-    })
-    it('[triggerAlarm] rings the alarm if [allowMelody] is false', () => {
-      // Restore the stubbed function so we can mock it
-      // vm._ringAlarm.restore()
-      // vm._stopAlarm.restore()
-
-      // Setup mocks
-      var mock = sinon.mock(vm)
-      var ringAlarmExpectation = mock.expects('_ringAlarm')
-      var stopAlarmExpectation = mock.expects('_stopAlarm')
-      ringAlarmExpectation.never()
-      stopAlarmExpectation.never()
-
-      // Verify it
-      vm.allowMelody = false
-      vm.triggerAlarm()
-      ringAlarmExpectation.verify()
-      stopAlarmExpectation.verify()
+        // Verify it
+        vm.allowMelody = true
+        vm.allowMelody = settings[i].allowMelody
+        vm.allowVibration = settings[i].allowVibration
+        vm.triggerAlarm()
+        ringAlarmExpectation.verify()
+        stopAlarmExpectation.verify()
+        mock.restore()
+      }
     })
     it('[switchToSettingsView] pauses timer', () => {
       let spy = sinon.spy(vm, 'pauseTimer')
