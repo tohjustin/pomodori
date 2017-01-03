@@ -98,7 +98,7 @@ module.exports = {
       fileName: 'asset-manifest.json'
     }),
     new CopyWebpackPlugin([
-      // { from: './src/sw.js' },
+      { from: './src/sw.js' },
       { from: './src/manifest.json' },
     ]),
   ]
