@@ -51,11 +51,16 @@ self.addEventListener('activate', event => {
 })
 
 self.addEventListener('fetch', event => {
-  // Return cached content if there's a cache hit
-  event.respondWith(
-    caches.open(CACHE_NAME)
-      .then(cache => cacheableRequestFailingToCacheStrategy({ event, cache }))
-  )
+  // Don't intercept requests to google analytics
+  if (event.request.url.startsWith('https://www.google-analytics.com/')) {
+    return fetch(event.request)
+  } else {
+    // Return cached content if there's a cache hit
+    event.respondWith(
+      caches.open(CACHE_NAME)
+        .then(cache => cacheableRequestFailingToCacheStrategy({ event, cache }))
+    )
+  }
 })
 
 let cacheableRequestFailingToCacheStrategy = ({ event, cache }) => {
