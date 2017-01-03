@@ -2,7 +2,7 @@
   <div id="app">
     <div class="MainView">
       <div class="top">
-        <img class="logo" src="/static/logo.png">
+        <img class="logo" src="/static/logo.png" alt="Pomodori Logo">
         <mu-icon-button v-on:click="switchToSettingsView" icon="settings"/>
       </div>
       <div class="middle">
