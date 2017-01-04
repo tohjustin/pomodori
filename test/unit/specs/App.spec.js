@@ -26,44 +26,52 @@ describe('App', () => {
 
   describe('Test [STATE] helper object', () => {
     it('method STATE.GET_MODE() should be implemented correctly', () => {
-      expect(STATE.GET_MODE(STATE.WORK_START)).to.equal('WORK')
-      expect(STATE.GET_MODE(STATE.WORK)).to.equal('WORK')
-      expect(STATE.GET_MODE(STATE.WORK_PAUSED)).to.equal('WORK')
-      expect(STATE.GET_MODE(STATE.BREAK_START)).to.equal('BREAK')
-      expect(STATE.GET_MODE(STATE.BREAK)).to.equal('BREAK')
-      expect(STATE.GET_MODE(STATE.BREAK_PAUSED)).to.equal('BREAK')
+      expect(STATE.GET_MODE(STATE.WORK_START)).to.deep.equal('work')
+      expect(STATE.GET_MODE(STATE.WORK)).to.deep.equal('work')
+      expect(STATE.GET_MODE(STATE.WORK_PAUSED)).to.deep.equal('work')
+      expect(STATE.GET_MODE(STATE.BREAK_START)).to.deep.equal('break')
+      expect(STATE.GET_MODE(STATE.BREAK)).to.deep.equal('break')
+      expect(STATE.GET_MODE(STATE.BREAK_PAUSED)).to.deep.equal('break')
+    })
+    it('method STATE.GET_STATUS() should be implemented correctly', () => {
+      expect(STATE.GET_STATUS(STATE.WORK_START)).to.deep.equal('init')
+      expect(STATE.GET_STATUS(STATE.WORK)).to.deep.equal('active')
+      expect(STATE.GET_STATUS(STATE.WORK_PAUSED)).to.deep.equal('inactive')
+      expect(STATE.GET_STATUS(STATE.BREAK_START)).to.deep.equal('init')
+      expect(STATE.GET_STATUS(STATE.BREAK)).to.deep.equal('active')
+      expect(STATE.GET_STATUS(STATE.BREAK_PAUSED)).to.deep.equal('inactive')
     })
     it('method STATE.START() should be implemented correctly', () => {
-      expect(STATE.START(STATE.WORK_START)).to.equal(STATE.WORK)
-      expect(STATE.START(STATE.WORK)).to.equal(STATE.WORK)
-      expect(STATE.START(STATE.WORK_PAUSED)).to.equal(STATE.WORK)
-      expect(STATE.START(STATE.BREAK_START)).to.equal(STATE.BREAK)
-      expect(STATE.START(STATE.BREAK)).to.equal(STATE.BREAK)
-      expect(STATE.START(STATE.BREAK_PAUSED)).to.equal(STATE.BREAK)
+      expect(STATE.START(STATE.WORK_START)).to.deep.equal(STATE.WORK)
+      expect(STATE.START(STATE.WORK)).to.deep.equal(STATE.WORK)
+      expect(STATE.START(STATE.WORK_PAUSED)).to.deep.equal(STATE.WORK)
+      expect(STATE.START(STATE.BREAK_START)).to.deep.equal(STATE.BREAK)
+      expect(STATE.START(STATE.BREAK)).to.deep.equal(STATE.BREAK)
+      expect(STATE.START(STATE.BREAK_PAUSED)).to.deep.equal(STATE.BREAK)
     })
     it('method STATE.PAUSE() should be implemented correctly', () => {
-      expect(STATE.PAUSE(STATE.WORK_START)).to.equal(STATE.WORK_PAUSED)
-      expect(STATE.PAUSE(STATE.WORK)).to.equal(STATE.WORK_PAUSED)
-      expect(STATE.PAUSE(STATE.WORK_PAUSED)).to.equal(STATE.WORK_PAUSED)
-      expect(STATE.PAUSE(STATE.BREAK_START)).to.equal(STATE.BREAK_PAUSED)
-      expect(STATE.PAUSE(STATE.BREAK)).to.equal(STATE.BREAK_PAUSED)
-      expect(STATE.PAUSE(STATE.BREAK_PAUSED)).to.equal(STATE.BREAK_PAUSED)
+      expect(STATE.PAUSE(STATE.WORK_START)).to.deep.equal(STATE.WORK_PAUSED)
+      expect(STATE.PAUSE(STATE.WORK)).to.deep.equal(STATE.WORK_PAUSED)
+      expect(STATE.PAUSE(STATE.WORK_PAUSED)).to.deep.equal(STATE.WORK_PAUSED)
+      expect(STATE.PAUSE(STATE.BREAK_START)).to.deep.equal(STATE.BREAK_PAUSED)
+      expect(STATE.PAUSE(STATE.BREAK)).to.deep.equal(STATE.BREAK_PAUSED)
+      expect(STATE.PAUSE(STATE.BREAK_PAUSED)).to.deep.equal(STATE.BREAK_PAUSED)
     })
     it('method STATE.RESET() should be implemented correctly', () => {
-      expect(STATE.RESET(STATE.WORK_START)).to.equal(STATE.WORK_START)
-      expect(STATE.RESET(STATE.WORK)).to.equal(STATE.WORK_START)
-      expect(STATE.RESET(STATE.WORK_PAUSED)).to.equal(STATE.WORK_START)
-      expect(STATE.RESET(STATE.BREAK_START)).to.equal(STATE.BREAK_START)
-      expect(STATE.RESET(STATE.BREAK)).to.equal(STATE.BREAK_START)
-      expect(STATE.RESET(STATE.BREAK_PAUSED)).to.equal(STATE.BREAK_START)
+      expect(STATE.RESET(STATE.WORK_START)).to.deep.equal(STATE.WORK_START)
+      expect(STATE.RESET(STATE.WORK)).to.deep.equal(STATE.WORK_START)
+      expect(STATE.RESET(STATE.WORK_PAUSED)).to.deep.equal(STATE.WORK_START)
+      expect(STATE.RESET(STATE.BREAK_START)).to.deep.equal(STATE.BREAK_START)
+      expect(STATE.RESET(STATE.BREAK)).to.deep.equal(STATE.BREAK_START)
+      expect(STATE.RESET(STATE.BREAK_PAUSED)).to.deep.equal(STATE.BREAK_START)
     })
     it('method STATE.SWITCH() should be implemented correctly', () => {
-      expect(STATE.SWITCH(STATE.WORK_START)).to.equal(STATE.BREAK_START)
-      expect(STATE.SWITCH(STATE.WORK)).to.equal(STATE.BREAK_START)
-      expect(STATE.SWITCH(STATE.WORK_PAUSED)).to.equal(STATE.BREAK_START)
-      expect(STATE.SWITCH(STATE.BREAK_START)).to.equal(STATE.WORK_START)
-      expect(STATE.SWITCH(STATE.BREAK)).to.equal(STATE.WORK_START)
-      expect(STATE.SWITCH(STATE.BREAK_PAUSED)).to.equal(STATE.WORK_START)
+      expect(STATE.SWITCH(STATE.WORK_START)).to.deep.equal(STATE.BREAK_START)
+      expect(STATE.SWITCH(STATE.WORK)).to.deep.equal(STATE.BREAK_START)
+      expect(STATE.SWITCH(STATE.WORK_PAUSED)).to.deep.equal(STATE.BREAK_START)
+      expect(STATE.SWITCH(STATE.BREAK_START)).to.deep.equal(STATE.WORK_START)
+      expect(STATE.SWITCH(STATE.BREAK)).to.deep.equal(STATE.WORK_START)
+      expect(STATE.SWITCH(STATE.BREAK_PAUSED)).to.deep.equal(STATE.WORK_START)
     })
   })
 
@@ -169,15 +177,6 @@ describe('App', () => {
       expect(pauseTimerSpy.callCount).to.equal(0)
       startTimerSpy.reset()
       pauseTimerSpy.reset()
-
-      vm.state = ''
-      expect(vm.primaryButton).to.have.deep.property('text', 'ERROR')
-      expect(vm.primaryButton).to.have.deep.property('bgColor', '#FFFFFF')
-      vm.primaryButton.callbackFn()
-      expect(startTimerSpy.callCount).to.equal(0)
-      expect(pauseTimerSpy.callCount).to.equal(0)
-      startTimerSpy.reset()
-      pauseTimerSpy.reset()
     })
   })
 
@@ -197,19 +196,19 @@ describe('App', () => {
 
         // Begin Test
         vm.startTimer()
-        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.state).to.deep.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(20)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(500)
-        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.state).to.deep.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(20)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(500)
-        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.state).to.deep.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(19)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(2000)
-        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.state).to.deep.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(17)
         expect(vm.timerWorker).not.to.be.null
 
@@ -231,19 +230,19 @@ describe('App', () => {
 
         // Begin Test
         vm.startTimer()
-        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.state).to.deep.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(10)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(500)
-        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.state).to.deep.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(10)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(500)
-        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.state).to.deep.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(9)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(2000)
-        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.state).to.deep.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(7)
         expect(vm.timerWorker).not.to.be.null
 
@@ -260,28 +259,28 @@ describe('App', () => {
       vm.breakDuration = 10
       vm.state = STATE.WORK
       vm.timerWorker = null
-      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.state).to.deep.equal(STATE.WORK)
       expect(vm.timerWorker).to.be.null
 
       // Begin Test
       vm.startTimer()
       expect(spy.callCount).to.equal(0)
-      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.state).to.deep.equal(STATE.WORK)
       expect(vm.timeRemaining).to.equal(1)
       expect(vm.timerWorker).not.to.be.null
       CLOCK.tick(500)
       expect(spy.callCount).to.equal(0)
-      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.state).to.deep.equal(STATE.WORK)
       expect(vm.timeRemaining).to.equal(1)
       expect(vm.timerWorker).not.to.be.null
       CLOCK.tick(500)
       expect(spy.callCount).to.equal(1)
-      expect(vm.state).to.equal(STATE.BREAK_START)
+      expect(vm.state).to.deep.equal(STATE.BREAK_START)
       expect(vm.timeRemaining).to.equal(10)
       expect(vm.timerWorker).to.be.null
       CLOCK.tick(2000)
       expect(spy.callCount).to.equal(1)
-      expect(vm.state).to.equal(STATE.BREAK_START)
+      expect(vm.state).to.deep.equal(STATE.BREAK_START)
       expect(vm.timeRemaining).to.equal(10)
       expect(vm.timerWorker).to.be.null
 
@@ -297,28 +296,28 @@ describe('App', () => {
       vm.breakDuration = 10
       vm.state = STATE.BREAK
       vm.timerWorker = null
-      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.state).to.deep.equal(STATE.BREAK)
       expect(vm.timerWorker).to.be.null
 
       // Begin Test
       vm.startTimer()
       expect(spy.callCount).to.equal(0)
-      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.state).to.deep.equal(STATE.BREAK)
       expect(vm.timeRemaining).to.equal(1)
       expect(vm.timerWorker).not.to.be.null
       CLOCK.tick(500)
       expect(spy.callCount).to.equal(0)
-      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.state).to.deep.equal(STATE.BREAK)
       expect(vm.timeRemaining).to.equal(1)
       expect(vm.timerWorker).not.to.be.null
       CLOCK.tick(500)
       expect(spy.callCount).to.equal(1)
-      expect(vm.state).to.equal(STATE.WORK_START)
+      expect(vm.state).to.deep.equal(STATE.WORK_START)
       expect(vm.timeRemaining).to.equal(20)
       expect(vm.timerWorker).to.be.null
       CLOCK.tick(2000)
       expect(spy.callCount).to.equal(1)
-      expect(vm.state).to.equal(STATE.WORK_START)
+      expect(vm.state).to.deep.equal(STATE.WORK_START)
       expect(vm.timeRemaining).to.equal(20)
       expect(vm.timerWorker).to.be.null
 
@@ -357,20 +356,20 @@ describe('App', () => {
 
         // Begin Test
         vm.startTimer()
-        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.state).to.deep.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(20)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(2000)
-        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.state).to.deep.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(18)
         expect(vm.timerWorker).not.to.be.null
 
         vm.pauseTimer()
-        expect(vm.state).to.equal(STATE.WORK_PAUSED)
+        expect(vm.state).to.deep.equal(STATE.WORK_PAUSED)
         expect(vm.timeRemaining).to.equal(18)
         expect(vm.timerWorker).to.be.null
         CLOCK.tick(2000)
-        expect(vm.state).to.equal(STATE.WORK_PAUSED)
+        expect(vm.state).to.deep.equal(STATE.WORK_PAUSED)
         expect(vm.timeRemaining).to.equal(18)
         expect(vm.timerWorker).to.be.null
 
@@ -392,20 +391,20 @@ describe('App', () => {
 
         // Begin Test
         vm.startTimer()
-        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.state).to.deep.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(10)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(3000)
-        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.state).to.deep.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(7)
         expect(vm.timerWorker).not.to.be.null
 
         vm.pauseTimer()
-        expect(vm.state).to.equal(STATE.BREAK_PAUSED)
+        expect(vm.state).to.deep.equal(STATE.BREAK_PAUSED)
         expect(vm.timeRemaining).to.equal(7)
         expect(vm.timerWorker).to.be.null
         CLOCK.tick(3000)
-        expect(vm.state).to.equal(STATE.BREAK_PAUSED)
+        expect(vm.state).to.deep.equal(STATE.BREAK_PAUSED)
         expect(vm.timeRemaining).to.equal(7)
         expect(vm.timerWorker).to.be.null
 
@@ -427,20 +426,20 @@ describe('App', () => {
 
         // Begin Test
         vm.startTimer()
-        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.state).to.deep.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(15)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(2000)
-        expect(vm.state).to.equal(STATE.WORK)
+        expect(vm.state).to.deep.equal(STATE.WORK)
         expect(vm.timeRemaining).to.equal(13)
         expect(vm.timerWorker).not.to.be.null
 
         vm.resetTimer()
-        expect(vm.state).to.equal(STATE.WORK_START)
+        expect(vm.state).to.deep.equal(STATE.WORK_START)
         expect(vm.timeRemaining).to.equal(20)
         expect(vm.timerWorker).to.be.null
         CLOCK.tick(2000)
-        expect(vm.state).to.equal(STATE.WORK_START)
+        expect(vm.state).to.deep.equal(STATE.WORK_START)
         expect(vm.timeRemaining).to.equal(20)
         expect(vm.timerWorker).to.be.null
 
@@ -462,20 +461,20 @@ describe('App', () => {
 
         // Begin Test
         vm.startTimer()
-        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.state).to.deep.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(5)
         expect(vm.timerWorker).not.to.be.null
         CLOCK.tick(3000)
-        expect(vm.state).to.equal(STATE.BREAK)
+        expect(vm.state).to.deep.equal(STATE.BREAK)
         expect(vm.timeRemaining).to.equal(2)
         expect(vm.timerWorker).not.to.be.null
 
         vm.resetTimer()
-        expect(vm.state).to.equal(STATE.BREAK_START)
+        expect(vm.state).to.deep.equal(STATE.BREAK_START)
         expect(vm.timeRemaining).to.equal(10)
         expect(vm.timerWorker).to.be.null
         CLOCK.tick(3000)
-        expect(vm.state).to.equal(STATE.BREAK_START)
+        expect(vm.state).to.deep.equal(STATE.BREAK_START)
         expect(vm.timeRemaining).to.equal(10)
         expect(vm.timerWorker).to.be.null
 
@@ -507,16 +506,16 @@ describe('App', () => {
       vm.breakDuration = 10
       vm.state = STATE.WORK
       vm.timerWorker = null
-      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.state).to.deep.equal(STATE.WORK)
       expect(vm.timerWorker).to.be.null
 
       // Begin Test
       vm.startTimer()
-      expect(vm.state).to.equal(STATE.WORK)
+      expect(vm.state).to.deep.equal(STATE.WORK)
       expect(vm.timeRemaining).to.equal(2)
       expect(vm.timerWorker).not.to.be.null
       vm.triggerAlarm()
-      expect(vm.state).to.equal(STATE.BREAK_START)
+      expect(vm.state).to.deep.equal(STATE.BREAK_START)
       expect(vm.timeRemaining).to.equal(10)
       expect(vm.timerWorker).to.be.null
 
@@ -530,16 +529,16 @@ describe('App', () => {
       vm.breakDuration = 10
       vm.state = STATE.BREAK
       vm.timerWorker = null
-      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.state).to.deep.equal(STATE.BREAK)
       expect(vm.timerWorker).to.be.null
 
       // Begin Test
       vm.startTimer()
-      expect(vm.state).to.equal(STATE.BREAK)
+      expect(vm.state).to.deep.equal(STATE.BREAK)
       expect(vm.timeRemaining).to.equal(5)
       expect(vm.timerWorker).not.to.be.null
       vm.triggerAlarm()
-      expect(vm.state).to.equal(STATE.WORK_START)
+      expect(vm.state).to.deep.equal(STATE.WORK_START)
       expect(vm.timeRemaining).to.equal(20)
       expect(vm.timerWorker).to.be.null
 

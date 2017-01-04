@@ -32,19 +32,37 @@ import * as _ from 'lodash'
 import radialBar from './components/radialBar'
 import settings from './components/SettingsView'
 
-// Helper Object to manage STATE
+// helper object to manage our app's state
 const STATE = {
-  WORK_START: 'WORK_START_STATE',
-  WORK: 'WORK_STATE',
-  WORK_PAUSED: 'WORK_PAUSED_STATE',
-  BREAK_START: 'BREAK_START_STATE',
-  BREAK: 'BREAK_STATE',
-  BREAK_PAUSE: 'BREAK_PAUSE_STATE',
-  GET_MODE: (inputState) => { return (inputState === STATE.WORK_START || inputState === STATE.WORK || inputState === STATE.WORK_PAUSED) ? 'WORK' : 'BREAK' },
-  START: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK : STATE.BREAK },
-  PAUSE: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK_PAUSED : STATE.BREAK_PAUSED },
-  RESET: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK_START : STATE.BREAK_START },
-  SWITCH: (inputState) => { return (STATE.GET_MODE(inputState) === 'BREAK') ? STATE.WORK_START : STATE.BREAK_START }
+  WORK_START: { mode: 'work', status: 'init' },
+  WORK: { mode: 'work', status: 'active' },
+  WORK_PAUSED: { mode: 'work', status: 'inactive' },
+  BREAK_START: { mode: 'break', status: 'init' },
+  BREAK: { mode: 'break', status: 'active' },
+  BREAK_PAUSED: { mode: 'break', status: 'inactive' },
+  GET_MODE: (inputState) => { return inputState.mode },
+  GET_STATUS: (inputState) => { return inputState.status },
+  START: (inputState) => {
+    let temp = _.clone(inputState)
+    temp.status = 'active'
+    return temp
+  },
+  PAUSE: (inputState) => {
+    let temp = _.clone(inputState)
+    temp.status = 'inactive'
+    return temp
+  },
+  RESET: (inputState) => {
+    let temp = _.clone(inputState)
+    temp.status = 'init'
+    return temp
+  },
+  SWITCH: (inputState) => {
+    let temp = _.clone(inputState)
+    temp.mode = (temp.mode === 'break') ? 'work' : 'break'
+    temp.status = 'init'
+    return temp
+  }
 }
 
 export default {
@@ -64,11 +82,13 @@ export default {
       breakDuration: 300,
       allowMelody: true,
       allowVibration: true,
-      // Worker objects for our timer
+      // worker objects for our timer
       timerWorker: null,
       alarmWorker: null,
-      // Data used for responsiveness
-      radialBarSize: 300
+      // data used for responsiveness
+      radialBarSize: 300,
+      // variable to control timer speed
+      clockDelay: 1000
     }
   },
   computed: {
@@ -76,35 +96,25 @@ export default {
       return _.chain(this.timeRemaining / 60).floor().padStart(2, '0') + ':' + _.chain(this.timeRemaining % 60).padStart(2, '0')
     },
     fractionOfTimeLeft: function () {
-      if (this.state === STATE.WORK_START || this.state === STATE.WORK || this.state === STATE.WORK_PAUSED) {
-        return this.timeRemaining / this.workDuration
-      } else {
-        return this.timeRemaining / this.breakDuration
-      }
+      return (this.state.mode === 'work') ? (this.timeRemaining / this.workDuration) : (this.timeRemaining / this.breakDuration)
     },
-    // Computes the data of the primaryButton at any given [state]
+    // computes the data of the primaryButton at any given [state]
     primaryButton: function () {
-      switch (this.state) {
-        case STATE.WORK_START:
-          return { text: 'START WORKING', bgColor: '#2196F3', callbackFn: () => { this.startTimer() } }
-        case STATE.WORK:
-          return { text: 'STOP WORKING', bgColor: '#2196F3', callbackFn: () => { this.pauseTimer() } }
-        case STATE.WORK_PAUSED:
-          return { text: 'RESUME WORKING', bgColor: '#2196F3', callbackFn: () => { this.startTimer() } }
-        case STATE.BREAK_START:
-          return { text: 'START MY BREAK', bgColor: '#7CB342', callbackFn: () => { this.startTimer() } }
-        case STATE.BREAK:
-          return { text: 'STOP MY BREAK', bgColor: '#7CB342', callbackFn: () => { this.pauseTimer() } }
-        case STATE.BREAK_PAUSED:
-          return { text: 'RESUME MY BREAK', bgColor: '#7CB342', callbackFn: () => { this.startTimer() } }
-        default:
-          return { text: 'ERROR', bgColor: '#FFFFFF', callbackFn: () => {} } // Error
+      let primaryBtn = {}
+      switch (this.state.status) {
+        case 'init': primaryBtn.text = 'START'; break
+        case 'active': primaryBtn.text = 'STOP'; break
+        case 'inactive': primaryBtn.text = 'RESUME'; break
       }
+      primaryBtn.text += (this.state.mode === 'work') ? ' WORKING' : ' MY BREAK'
+      primaryBtn.bgColor = (this.state.mode === 'work') ? '#2196F3' : '#7CB342'
+      primaryBtn.callbackFn = (this.state.status === 'active') ? () => { this.pauseTimer() } : () => { this.startTimer() }
+      return primaryBtn
     }
   },
   methods: {
     startTimer: function () {
-      // Workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
+      // workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
       this._preloadAudio()
 
       this.state = STATE.START(this.state)
@@ -116,7 +126,7 @@ export default {
           if (this.timeRemaining <= 0) {
             this.triggerAlarm()
           }
-        }, 1000)
+        }, this.clockDelay)
       }
     },
     pauseTimer: function () {
@@ -126,13 +136,13 @@ export default {
     resetTimer: function () {
       this._clearWorker()
       this.state = STATE.RESET(this.state)
-      this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
+      this.timeRemaining = (this.state.mode === 'work') ? this.workDuration : this.breakDuration
       this._stopAlarm()
     },
     triggerAlarm: function () {
       this._clearWorker()
       this.state = STATE.SWITCH(this.state)
-      this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
+      this.timeRemaining = (this.state.mode === 'work') ? this.workDuration : this.breakDuration
       this._ringAlarm()
     },
     switchToSettingsView: function () {
