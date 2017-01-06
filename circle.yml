@@ -12,4 +12,5 @@ deployment:
     commands:
       - npm install -g firebase-tools
       - npm run build
+      - firebase use $FIREBASE_PRODUCTION_ID --token=$FIREBASE_PRODUCTION_TOKEN --non-interactive
       - firebase deploy --token=$FIREBASE_PRODUCTION_TOKEN --non-interactive
