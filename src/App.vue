@@ -160,6 +160,7 @@ export default {
     _ringAlarm: function () {
       let ring = () => {
         if (this.allowMelody) {
+          this.$refs.audio.pause()
           this.$refs.audio.currentTime = 0
           this.$refs.audio.play()
         }

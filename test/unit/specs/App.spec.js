@@ -551,7 +551,7 @@ describe('App', () => {
       // vm._stopAlarm.restore()
       const settings = [
         { allowMelody: false, allowVibration: false },
-        { allowMelody: true, allowVibration: true },
+        { allowMelody: false, allowVibration: true },
         { allowMelody: true, allowVibration: false },
         { allowMelody: true, allowVibration: true }
       ]
@@ -641,7 +641,7 @@ describe('App', () => {
 
       vm._ringAlarm()
       expect(spy).to.have.callCount(1)
-      expect(spy2).to.have.callCount(0)
+      expect(spy2).to.have.callCount(1)
       expect(spy3).to.have.callCount(0)
       expect(vm.alarmWorker).not.to.be.null
     })
