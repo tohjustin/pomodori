@@ -1,7 +1,16 @@
 machine:
   node:
     version: 6
-    
+
 test:
   post:
     - bash <(curl -s https://codecov.io/bash)
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - npm install -g firebase-tools
+      - npm run build
+      - firebase use $FIREBASE_PRODUCTION_ID --token=$FIREBASE_PRODUCTION_TOKEN --non-interactive
+      - firebase deploy --token=$FIREBASE_PRODUCTION_TOKEN --non-interactive

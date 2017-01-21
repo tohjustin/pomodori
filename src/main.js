@@ -1,5 +1,3 @@
-// import swURL from 'file?name=sw.js!babel!./sw' // eslint-disable-line no-unused-vars
-
 // Register Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {

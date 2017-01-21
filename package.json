@@ -1,13 +1,13 @@
 {
   "name": "pomodoro-timer-pwa",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Pomodoro Timer as a Progressive Web App (PWA)",
   "author": "Justin Toh <tohjustin@hotmail.com>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
-    "unit": "karma start test/unit/karma.conf.js --single-run",
+    "unit": "cp -r static test/unit/static && karma start test/unit/karma.conf.js --single-run && rm -r test/unit/static",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
