@@ -9,5 +9,9 @@ testsContext.keys().forEach(testsContext)
 // require all src files except main.js for coverage.
 // you can also change this to match only the subset of files that
 // you want coverage for.
-const srcContext = require.context('src', true, /^\.\/(?!main|sw(\.js)?$)/)
-srcContext.keys().forEach(srcContext)
+const srcContext = require.context('src', true, /^\.\/(?!(main|sw)(\.js)?$)/)
+srcContext.keys().forEach((srcContext) => {
+  if (srcContext.indexOf('./js/') !== -1) {
+    srcContext
+  }
+})

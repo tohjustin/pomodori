@@ -15,12 +15,8 @@
         <mu-slider :step="60" :min="60" :max="3600" v-model="myBreakDuration"/>
       </mu-list-item>
       <mu-divider/>
-      <mu-list-item title="Play Alarm Melody">
-        <mu-switch slot="right" v-model="myAllowMelody"/>
-      </mu-list-item>
-      <mu-divider/>
-      <mu-list-item title="Vibrate on alarm" :describeText="vibrationSupported ? 'Your browser supports vibration' : 'Your browser doesn\'t support vibration'">
-        <mu-switch slot="right" v-model="myAllowVibration" :disabled="!vibrationSupported"/>
+      <mu-list-item title="Push Notifications" :describeText="notificationSettingDescription">
+        <mu-switch slot="right" v-model="myAllowNotification" :disabled="disableNotificationSetting"/>
       </mu-list-item>
       <mu-divider/>
     </mu-list>
@@ -33,30 +29,46 @@ import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
 Vue.use(MuseUI)
 
+import notificationHelper from '../js/notificationHelper'
+
 export default {
   name: 'settings',
   props: {
     workDuration: { type: Number, required: true },
     breakDuration: { type: Number, required: true },
-    allowMelody: { type: Boolean, required: true },
-    allowVibration: { type: Boolean, required: true }
+    allowNotification: { type: Boolean, required: true }
   },
   data () {
     return {
       myWorkDuration: this.workDuration,
       myBreakDuration: this.breakDuration,
-      myAllowMelody: this.allowMelody,
-      myAllowVibration: this.allowVibration,
-      vibrationSupported: false
+      myAllowNotification: this.allowNotification
+    }
+  },
+  computed: {
+    disableNotificationSetting: function () {
+      return !notificationHelper.supported() || notificationHelper.isBlocked()
+    },
+    notificationSettingDescription: function () {
+      if (!notificationHelper.supported()) {
+        return 'Your browser does not support notifications'
+      } else if (notificationHelper.isBlocked()) {
+        return 'Please unblock notifications via your browser settings'
+      } else {
+        if (this.myAllowNotification === true) {
+          return 'You will be notified when timer reaches zero'
+        } else if (this.myAllowNotification === false) {
+          return 'You will NOT be notified when timer reaches zero'
+        }
+      }
     }
   },
   methods: {
     backToAppView () {
-      let settings = {
+      var settings = {
         workDuration: this.myWorkDuration,
         breakDuration: this.myBreakDuration,
-        allowMelody: this.myAllowMelody,
-        allowVibration: this.myAllowVibration
+        allowNotification: this.myAllowNotification
       }
       this.$emit('change', settings)
     }
@@ -65,14 +77,6 @@ export default {
     toMinutes: function (value, text) {
       return `${text} (${value / 60} min)`
     }
-  },
-  created: function () {
-    // Check if browser supports HTML5 Vibration API
-    navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate
-    let vibrationSupported = ('vibrate' in navigator && navigator.vibrate !== undefined)
-
-    this.vibrationSupported = vibrationSupported
-    this.myAllowVibration = this.myAllowVibration && vibrationSupported
   }
 }
 </script>
@@ -101,6 +105,9 @@ export default {
 .mu-item {
   padding-top: 12px !important;
   padding-bottom: 12px !important;
+}
+.mu-item-text {
+  word-break: normal;
 }
 .mu-slider {
   margin-bottom: 0px !important;

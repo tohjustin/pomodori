@@ -3,45 +3,12 @@ import { mountComponent } from '../utils.js'
 import SettingsView from 'src/components/SettingsView.vue'
 
 describe('SettingsView', () => {
-  beforeEach(() => {
-    // Alternate way to stub to improve test coverage
-    navigator.vibrate = () => {}
-  })
-
-  describe('Test Hooks', () => {
-    it('[created] checks browser vibration API support correctly (navigator.vibrate !== undefined)', () => {
-      navigator.vibrate = () => {}
-      const vm = mountComponent(SettingsView, {
-        workDuration: 1,
-        breakDuration: 1,
-        allowMelody: false,
-        allowVibration: false
-      })
-
-      expect(vm.myAllowVibration).to.be.false // allowMelody == false
-      expect(vm.vibrationSupported).to.be.true
-    })
-    it('[created] checks browser vibration API support correctly (navigator.vibrate === undefined)', () => {
-      navigator.vibrate = undefined
-      const vm = mountComponent(SettingsView, {
-        workDuration: 1,
-        breakDuration: 1,
-        allowMelody: true,
-        allowVibration: false
-      })
-
-      expect(vm.myAllowVibration).to.be.false
-      expect(vm.vibrationSupported).to.be.false
-    })
-  })
-
   describe('Test Filters', () => {
     it('[toMinutes] filter transforms the inputs correctly', () => {
       const vm = mountComponent(SettingsView, {
         workDuration: 1,
         breakDuration: 1,
-        allowMelody: false,
-        allowVibration: false
+        allowNotification: false
       })
 
       expect(vm.$options.filters.toMinutes(6666, 'Test')).to.equal('Test (111.1 min)')
@@ -54,7 +21,7 @@ describe('SettingsView', () => {
     it('[backToAppView] emits [change] event with correct values', () => {
       let spy = sinon.spy()
       const vm = new Vue({
-        template: '<div><SettingsView :workDuration="1" :breakDuration="1" :allowMelody="false" :allowVibration="false" v-on:change="callbackFn"></SettingsView></div>',
+        template: '<div><SettingsView :workDuration="1" :breakDuration="1" :allowNotification="false" v-on:change="callbackFn"></SettingsView></div>',
         components: { SettingsView },
         methods: {
           callbackFn: spy
@@ -63,7 +30,7 @@ describe('SettingsView', () => {
       vm.$children[0].backToAppView()
 
       expect(spy).to.have.been.calledOnce
-      expect(spy).to.have.been.calledWith({ workDuration: 1, breakDuration: 1, allowMelody: false, allowVibration: false })
+      expect(spy).to.have.been.calledWith({ workDuration: 1, breakDuration: 1, allowNotification: false })
     })
   })
 })

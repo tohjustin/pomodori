@@ -12,11 +12,10 @@
         <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
         <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn"/>
       </div>
-      <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
     </div>
     <transition name="slide">
       <div class="SettingsView" v-show="showSettingsView">
-        <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowMelody="allowMelody" :allowVibration="allowVibration" v-on:change="switchToMainView"/>
+        <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowNotification="allowNotification" v-on:change="switchToMainView"/>
       </div>
     </transition>
   </div>
@@ -31,20 +30,39 @@ Vue.use(MuseUI)
 import * as _ from 'lodash'
 import radialBar from './components/radialBar'
 import settings from './components/SettingsView'
+import notificationHelper from './js/notificationHelper'
 
-// Helper Object to manage STATE
+// helper object to manage our app's state
 const STATE = {
-  WORK_START: 'WORK_START_STATE',
-  WORK: 'WORK_STATE',
-  WORK_PAUSED: 'WORK_PAUSED_STATE',
-  BREAK_START: 'BREAK_START_STATE',
-  BREAK: 'BREAK_STATE',
-  BREAK_PAUSE: 'BREAK_PAUSE_STATE',
-  GET_MODE: (inputState) => { return (inputState === STATE.WORK_START || inputState === STATE.WORK || inputState === STATE.WORK_PAUSED) ? 'WORK' : 'BREAK' },
-  START: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK : STATE.BREAK },
-  PAUSE: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK_PAUSED : STATE.BREAK_PAUSED },
-  RESET: (inputState) => { return (STATE.GET_MODE(inputState) === 'WORK') ? STATE.WORK_START : STATE.BREAK_START },
-  SWITCH: (inputState) => { return (STATE.GET_MODE(inputState) === 'BREAK') ? STATE.WORK_START : STATE.BREAK_START }
+  WORK_START: { mode: 'work', status: 'init' },
+  WORK: { mode: 'work', status: 'active' },
+  WORK_PAUSED: { mode: 'work', status: 'inactive' },
+  BREAK_START: { mode: 'break', status: 'init' },
+  BREAK: { mode: 'break', status: 'active' },
+  BREAK_PAUSED: { mode: 'break', status: 'inactive' },
+  GET_MODE: (inputState) => { return inputState.mode },
+  GET_STATUS: (inputState) => { return inputState.status },
+  START: (inputState) => {
+    let temp = _.clone(inputState)
+    temp.status = 'active'
+    return temp
+  },
+  PAUSE: (inputState) => {
+    let temp = _.clone(inputState)
+    temp.status = 'inactive'
+    return temp
+  },
+  RESET: (inputState) => {
+    let temp = _.clone(inputState)
+    temp.status = 'init'
+    return temp
+  },
+  SWITCH: (inputState) => {
+    let temp = _.clone(inputState)
+    temp.mode = (temp.mode === 'break') ? 'work' : 'break'
+    temp.status = 'init'
+    return temp
+  }
 }
 
 export default {
@@ -62,13 +80,14 @@ export default {
       // app Settings
       workDuration: 1500,
       breakDuration: 300,
-      allowMelody: true,
-      allowVibration: true,
-      // Worker objects for our timer
+      allowNotification: true && !notificationHelper.isBlocked(),
+      // worker objects for our timer
       timerWorker: null,
       alarmWorker: null,
-      // Data used for responsiveness
-      radialBarSize: 300
+      // data used for responsiveness
+      radialBarSize: 300,
+      // variable to control timer speed
+      clockDelay: 1000
     }
   },
   computed: {
@@ -76,39 +95,25 @@ export default {
       return _.chain(this.timeRemaining / 60).floor().padStart(2, '0') + ':' + _.chain(this.timeRemaining % 60).padStart(2, '0')
     },
     fractionOfTimeLeft: function () {
-      if (this.state === STATE.WORK_START || this.state === STATE.WORK || this.state === STATE.WORK_PAUSED) {
-        return this.timeRemaining / this.workDuration
-      } else {
-        return this.timeRemaining / this.breakDuration
-      }
+      return (this.state.mode === 'work') ? (this.timeRemaining / this.workDuration) : (this.timeRemaining / this.breakDuration)
     },
-    // Computes the data of the primaryButton at any given [state]
+    // computes the data of the primaryButton at any given [state]
     primaryButton: function () {
-      switch (this.state) {
-        case STATE.WORK_START:
-          return { text: 'START WORKING', bgColor: '#2196F3', callbackFn: () => { this.startTimer() } }
-        case STATE.WORK:
-          return { text: 'STOP WORKING', bgColor: '#2196F3', callbackFn: () => { this.pauseTimer() } }
-        case STATE.WORK_PAUSED:
-          return { text: 'RESUME WORKING', bgColor: '#2196F3', callbackFn: () => { this.startTimer() } }
-        case STATE.BREAK_START:
-          return { text: 'START MY BREAK', bgColor: '#7CB342', callbackFn: () => { this.startTimer() } }
-        case STATE.BREAK:
-          return { text: 'STOP MY BREAK', bgColor: '#7CB342', callbackFn: () => { this.pauseTimer() } }
-        case STATE.BREAK_PAUSED:
-          return { text: 'RESUME MY BREAK', bgColor: '#7CB342', callbackFn: () => { this.startTimer() } }
-        default:
-          return { text: 'ERROR', bgColor: '#FFFFFF', callbackFn: () => {} } // Error
+      let primaryBtn = {}
+      switch (this.state.status) {
+        case 'init': primaryBtn.text = 'START'; break
+        case 'active': primaryBtn.text = 'STOP'; break
+        case 'inactive': primaryBtn.text = 'RESUME'; break
       }
+      primaryBtn.text += (this.state.mode === 'work') ? ' WORKING' : ' MY BREAK'
+      primaryBtn.bgColor = (this.state.mode === 'work') ? '#2196F3' : '#7CB342'
+      primaryBtn.callbackFn = (this.state.status === 'active') ? () => { this.pauseTimer() } : () => { this.startTimer() }
+      return primaryBtn
     }
   },
   methods: {
     startTimer: function () {
-      // Workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
-      this._preloadAudio()
-
       this.state = STATE.START(this.state)
-      this._stopAlarm()
 
       if (this.timerWorker === null) {
         this.timerWorker = setInterval(() => {
@@ -116,24 +121,32 @@ export default {
           if (this.timeRemaining <= 0) {
             this.triggerAlarm()
           }
-        }, 1000)
+        }, this.clockDelay)
       }
     },
     pauseTimer: function () {
-      this._clearWorker()
+      this._clearTimeWorker()
       this.state = STATE.PAUSE(this.state)
     },
     resetTimer: function () {
-      this._clearWorker()
+      this._clearTimeWorker()
       this.state = STATE.RESET(this.state)
-      this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
-      this._stopAlarm()
+      this.timeRemaining = (this.state.mode === 'work') ? this.workDuration : this.breakDuration
     },
     triggerAlarm: function () {
-      this._clearWorker()
+      this._clearTimeWorker()
       this.state = STATE.SWITCH(this.state)
-      this.timeRemaining = (STATE.GET_MODE(this.state) === 'WORK') ? this.workDuration : this.breakDuration
-      this._ringAlarm()
+      this.timeRemaining = (this.state.mode === 'work') ? this.workDuration : this.breakDuration
+
+      var startBreakMessage = { title: 'Stop working already!', body: 'Time to start your break...' }
+      var backToWorkMessage = { title: 'Your break is over!', body: 'Time to get back to work...' }
+      if (this.allowNotification === true) {
+        notificationHelper.requestPermission()
+        notificationHelper.sendNotification(
+          (this.state.mode === 'work') ? backToWorkMessage.title : startBreakMessage.title,
+          (this.state.mode === 'work') ? backToWorkMessage.body : startBreakMessage.body
+        )
+      }
     },
     switchToSettingsView: function () {
       this.pauseTimer()
@@ -142,13 +155,12 @@ export default {
     switchToMainView: function (event) {
       this.workDuration = event.workDuration
       this.breakDuration = event.breakDuration
-      this.allowMelody = event.allowMelody
-      this.allowVibration = event.allowVibration
+      this.allowNotification = event.allowNotification
       this.resetTimer()
       this.showSettingsView = false
     },
     // [PRIVATE] terminates the timerWorker
-    _clearWorker: function () {
+    _clearTimeWorker: function () {
       clearInterval(this.timerWorker)
       this.timerWorker = null
     },
@@ -156,34 +168,8 @@ export default {
     _getStateHelper: function () {
       return STATE
     },
-    // [PRIVATE] triggers the alarmWorker (audio + vibration)
-    _ringAlarm: function () {
-      let ring = () => {
-        if (this.allowMelody) {
-          this.$refs.audio.pause()
-          this.$refs.audio.currentTime = 0
-          this.$refs.audio.play()
-        }
-        if (this.allowVibration && navigator.vibrate) {
-          navigator.vibrate(1500)
-        }
-      }
-      this.alarmWorker = setInterval(ring, 4000)
-      ring()
-    },
-    // [PRIVATE] terminates the alarmWorker (audio + vibration)
-    _stopAlarm: function () {
-      clearInterval(this.alarmWorker)
-      this.alarmWorker = null
-      this.$refs.audio.pause()
-      if (navigator.vibrate) {
-        navigator.vibrate(0)
-      }
-    },
-    // [PRIVATE] workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
-    _preloadAudio () {
-      this.$refs.audio.play()
-      this.$refs.audio.pause()
+    // [PRIVATE] sends browser notification
+    _sendNotification: function (msg) {
     },
     // [PRIVATE] callback for WINDOW_RESIZE event, resizes the radialBar component for the new viewport dimension
     _handleResize (event) {
@@ -195,9 +181,6 @@ export default {
     }
   },
   created: function () {
-    // enable vibration support
-    navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate
-
     // bind event handlers to the `_handleResize` method
     window.addEventListener('resize', this._handleResize)
     this._handleResize()

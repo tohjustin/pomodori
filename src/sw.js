@@ -6,7 +6,6 @@ const urlsToCache = [
   '/sw.js',
   '/index.html',
   '/manifest.json',
-  // '/static/alarm.mp3',
   '/static/logo.png',
   'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons',
   'https://fonts.gstatic.com/s/materialicons/v19/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2'
