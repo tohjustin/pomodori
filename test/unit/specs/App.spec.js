@@ -12,12 +12,6 @@ describe('App', () => {
     // sinon.stub(vm, '_ringAlarm')
     // sinon.stub(vm, '_stopAlarm')
     // sinon.stub(vm, '_preloadAudio')
-
-    // Alternate way to stub to improve test coverage
-    let audioObject = vm.$refs.audio
-    audioObject.play = () => {}
-    audioObject.pause = () => {}
-    navigator.vibrate = () => {}
   })
 
   afterEach(() => {
@@ -324,23 +318,6 @@ describe('App', () => {
       // Restore Timer
       CLOCK.restore()
     })
-    it('[startTimer] stops the alarm', () => {
-      // Restore the stubbed function so we can mock it
-      // vm._ringAlarm.restore()
-      // vm._stopAlarm.restore()
-
-      // Setup mocks
-      var mock = sinon.mock(vm)
-      var ringAlarmExpectation = mock.expects('_ringAlarm')
-      var stopAlarmExpectation = mock.expects('_stopAlarm')
-      ringAlarmExpectation.never()
-      stopAlarmExpectation.once()
-
-      // Verify it
-      vm.startTimer()
-      ringAlarmExpectation.verify()
-      stopAlarmExpectation.verify()
-    })
     it('[pauseTimer] stops decrementing [timeRemaining] every second in "WORK" mode', () => {
       const statesToTest = [ STATE.WORK_START, STATE.WORK, STATE.WORK_PAUSED ]
       for (var i = 0; i < statesToTest.length; i++) {
@@ -481,23 +458,6 @@ describe('App', () => {
         CLOCK.restore()
       }
     })
-    it('[resetTimer] stops the alarm', () => {
-      // Restore the stubbed function so we can mock it
-      // vm._ringAlarm.restore()
-      // vm._stopAlarm.restore()
-
-      // Setup mocks
-      var mock = sinon.mock(vm)
-      var ringAlarmExpectation = mock.expects('_ringAlarm')
-      var stopAlarmExpectation = mock.expects('_stopAlarm')
-      ringAlarmExpectation.never()
-      stopAlarmExpectation.once()
-
-      // Verify it
-      vm.resetTimer()
-      ringAlarmExpectation.verify()
-      stopAlarmExpectation.verify()
-    })
     it('[triggerAlarm] switches from "WORK" mode correctly', () => {
       const CLOCK = sinon.useFakeTimers()
       // Initialize component properties/variables
@@ -544,35 +504,6 @@ describe('App', () => {
 
       CLOCK.restore()
     })
-    it('[triggerAlarm] executes [_ringAlarm] regardless of [allowMelody]/[allowVibration] settings', () => {
-      // Restore the stubbed function so we can mock it
-      // vm._ringAlarm.restore()
-      // vm._stopAlarm.restore()
-      const settings = [
-        { allowMelody: false, allowVibration: false },
-        { allowMelody: false, allowVibration: true },
-        { allowMelody: true, allowVibration: false },
-        { allowMelody: true, allowVibration: true }
-      ]
-
-      for (let i = 0; i < settings.length; i++) {
-        // Setup mocks
-        let mock = sinon.mock(vm)
-        let ringAlarmExpectation = mock.expects('_ringAlarm')
-        let stopAlarmExpectation = mock.expects('_stopAlarm')
-        ringAlarmExpectation.once()
-        stopAlarmExpectation.never()
-
-        // Verify it
-        vm.allowMelody = true
-        vm.allowMelody = settings[i].allowMelody
-        vm.allowVibration = settings[i].allowVibration
-        vm.triggerAlarm()
-        ringAlarmExpectation.verify()
-        stopAlarmExpectation.verify()
-        mock.restore()
-      }
-    })
     it('[switchToSettingsView] pauses timer', () => {
       let spy = sinon.spy(vm, 'pauseTimer')
       vm.switchToSettingsView()
@@ -588,144 +519,26 @@ describe('App', () => {
     it('[switchToMainView] updates variable based on $emit values', () => {
       vm.workDuration = 1
       vm.breakDuration = 1
-      vm.allowMelody = false
-      vm.allowVibration = false
-      vm.$refs.settings.$emit('change', { workDuration: 10, breakDuration: 10, allowMelody: true, allowVibration: true })
+      vm.allowNotification = false
+      vm.$refs.settings.$emit('change', { workDuration: 10, breakDuration: 10, allowNotification: true })
       expect(vm.workDuration).to.equal(10)
       expect(vm.breakDuration).to.equal(10)
-      expect(vm.allowMelody).to.be.true
-      expect(vm.allowVibration).to.be.true
+      expect(vm.allowNotification).to.be.true
     })
     it('[switchToMainView] resets timer', () => {
       let spy = sinon.spy(vm, 'resetTimer')
-      vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowMelody: false, allowVibration: false })
+      vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowNotification: false })
       expect(spy).to.have.been.calledOnce
     })
     it('[switchToMainView] changes [showSettingsView] to false', () => {
       vm.showSettingsView = true
-      vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowMelody: false, allowVibration: false })
+      vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowNotification: false })
       expect(vm.showSettingsView).to.be.false
-      vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowMelody: false, allowVibration: false })
+      vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowNotification: false })
       expect(vm.showSettingsView).to.be.false
     })
   })
-  describe('Test Component Private Helper Methods', () => {
-    it('[_ringAlarm] does not play audio when [allowMelody] is false & vice versa', () => {
-      let audio = vm.$refs.audio
-      let spy = sinon.spy()
-      let spy2 = sinon.spy()
-      let spy3 = sinon.spy()
-      audio.play = spy
-      audio.pause = spy2
-      navigator.vibrate = spy3
-
-      vm.alarmWorker = null
-      vm.allowMelody = false
-      vm.allowVibration = false
-
-      vm._ringAlarm()
-      expect(spy).to.have.callCount(0)
-      expect(spy2).to.have.callCount(0)
-      expect(spy3).to.have.callCount(0)
-      expect(vm.alarmWorker).not.to.be.null
-
-      spy.reset()
-      spy2.reset()
-      spy3.reset()
-      clearInterval(vm.alarmWorker)
-
-      vm.alarmWorker = null
-      vm.allowMelody = true
-      vm.allowVibration = false
-
-      vm._ringAlarm()
-      expect(spy).to.have.callCount(1)
-      expect(spy2).to.have.callCount(1)
-      expect(spy3).to.have.callCount(0)
-      expect(vm.alarmWorker).not.to.be.null
-    })
-
-    it('[_ringAlarm] does not vibrate when [allowVibration] is false & vice versa', () => {
-      let audio = vm.$refs.audio
-      let spy = sinon.spy()
-      let spy2 = sinon.spy()
-      let spy3 = sinon.spy()
-      audio.play = spy
-      audio.pause = spy2
-      navigator.vibrate = spy3
-
-      vm.alarmWorker = null
-      vm.allowMelody = false
-      vm.allowVibration = false
-
-      vm._ringAlarm()
-      expect(spy).to.have.callCount(0)
-      expect(spy2).to.have.callCount(0)
-      expect(spy3).to.have.callCount(0)
-      expect(vm.alarmWorker).not.to.be.null
-
-      spy.reset()
-      spy2.reset()
-      spy3.reset()
-      clearInterval(vm.alarmWorker)
-
-      vm.alarmWorker = null
-      vm.allowMelody = false
-      vm.allowVibration = true
-
-      vm._ringAlarm()
-      expect(spy).to.have.callCount(0)
-      expect(spy2).to.have.callCount(0)
-      expect(spy3).to.have.callCount(1)
-      expect(spy3).not.to.have.been.calledWith(0)
-      expect(vm.alarmWorker).not.to.be.null
-    })
-
-    it('[_stopAlarm] terminates alarmWorker', () => {
-      let audio = vm.$refs.audio
-      var spy = sinon.spy()
-      var spy2 = sinon.spy()
-      let spy3 = sinon.spy()
-      audio.play = spy
-      audio.pause = spy2
-      navigator.vibrate = spy3
-
-      vm._stopAlarm()
-      expect(spy).to.have.callCount(0)
-      expect(spy2).to.have.callCount(1)
-      expect(spy3).to.have.callCount(1)
-      expect(spy3).to.have.been.calledWith(0)
-      expect(vm.alarmWorker).to.be.null
-
-      spy.reset()
-      spy2.reset()
-      spy3.reset()
-      let temp = navigator.vibrate
-      navigator.vibrate = undefined
-
-      vm._stopAlarm()
-      expect(spy).to.have.callCount(0)
-      expect(spy2).to.have.callCount(1)
-      expect(spy3).to.have.callCount(0)
-      expect(vm.alarmWorker).to.be.null
-
-      // restore navigator.vibrate
-      navigator.vibrate = temp
-    })
-
-    it('[_preloadAudio] play & pause audio', () => {
-      let audio = vm.$refs.audio
-      var spy = sinon.spy()
-      var spy2 = sinon.spy()
-      audio.play = spy
-      audio.pause = spy2
-
-      vm._preloadAudio()
-      expect(spy).to.have.been.calledOnce
-      expect(spy2).to.have.been.calledOnce
-    })
-  })
-
+  describe('Test Component Private Helper Methods', () => {})
   describe('Test Child Components', () => {
     it('[radialBar] should render', () => {
       expect(vm.$el.querySelector('.radialBar')).not.to.be.null
@@ -735,9 +548,6 @@ describe('App', () => {
     })
     it('[resetButton] should render', () => {
       expect(vm.$el.querySelector('.resetButton')).not.to.be.null
-    })
-    it('[audio] should render', () => {
-      expect(vm.$el.querySelector('.audio')).not.to.be.null
     })
   })
 })
