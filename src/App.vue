@@ -12,11 +12,10 @@
         <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
         <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn"/>
       </div>
-      <audio class="audio" ref="audio" src="/static/alarm.mp3" preload="auto" type="audio/mpeg"></audio>
     </div>
     <transition name="slide">
       <div class="SettingsView" v-show="showSettingsView">
-        <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowMelody="allowMelody" :allowVibration="allowVibration" v-on:change="switchToMainView"/>
+        <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowNotification="allowNotification" v-on:change="switchToMainView"/>
       </div>
     </transition>
   </div>
@@ -31,6 +30,7 @@ Vue.use(MuseUI)
 import * as _ from 'lodash'
 import radialBar from './components/radialBar'
 import settings from './components/SettingsView'
+import notificationHelper from './js/notificationHelper'
 
 // helper object to manage our app's state
 const STATE = {
@@ -74,14 +74,13 @@ export default {
   data () {
     return {
       // app State
-      timeRemaining: 1500,
+      timeRemaining: 10,
       state: STATE.WORK_START,
       showSettingsView: false,
       // app Settings
       workDuration: 1500,
       breakDuration: 300,
-      allowMelody: true,
-      allowVibration: true,
+      allowNotification: true && !notificationHelper.isBlocked(),
       // worker objects for our timer
       timerWorker: null,
       alarmWorker: null,
@@ -114,11 +113,7 @@ export default {
   },
   methods: {
     startTimer: function () {
-      // workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
-      this._preloadAudio()
-
       this.state = STATE.START(this.state)
-      this._stopAlarm()
 
       if (this.timerWorker === null) {
         this.timerWorker = setInterval(() => {
@@ -130,20 +125,28 @@ export default {
       }
     },
     pauseTimer: function () {
-      this._clearWorker()
+      this._clearTimeWorker()
       this.state = STATE.PAUSE(this.state)
     },
     resetTimer: function () {
-      this._clearWorker()
+      this._clearTimeWorker()
       this.state = STATE.RESET(this.state)
       this.timeRemaining = (this.state.mode === 'work') ? this.workDuration : this.breakDuration
-      this._stopAlarm()
     },
     triggerAlarm: function () {
-      this._clearWorker()
+      this._clearTimeWorker()
       this.state = STATE.SWITCH(this.state)
       this.timeRemaining = (this.state.mode === 'work') ? this.workDuration : this.breakDuration
-      this._ringAlarm()
+
+      var startBreakMessage = { title: 'Stop working already!', body: 'Time to start your break...' }
+      var backToWorkMessage = { title: 'Your break is over!', body: 'Time to get back to work...' }
+      if (this.allowNotification === true) {
+        notificationHelper.requestPermission()
+        notificationHelper.sendNotification(
+          (this.state.mode === 'work') ? backToWorkMessage.title : startBreakMessage.title,
+          (this.state.mode === 'work') ? backToWorkMessage.body : startBreakMessage.body
+        )
+      }
     },
     switchToSettingsView: function () {
       this.pauseTimer()
@@ -152,13 +155,12 @@ export default {
     switchToMainView: function (event) {
       this.workDuration = event.workDuration
       this.breakDuration = event.breakDuration
-      this.allowMelody = event.allowMelody
-      this.allowVibration = event.allowVibration
+      this.allowNotification = event.allowNotification
       this.resetTimer()
       this.showSettingsView = false
     },
     // [PRIVATE] terminates the timerWorker
-    _clearWorker: function () {
+    _clearTimeWorker: function () {
       clearInterval(this.timerWorker)
       this.timerWorker = null
     },
@@ -166,34 +168,8 @@ export default {
     _getStateHelper: function () {
       return STATE
     },
-    // [PRIVATE] triggers the alarmWorker (audio + vibration)
-    _ringAlarm: function () {
-      let ring = () => {
-        if (this.allowMelody) {
-          this.$refs.audio.pause()
-          this.$refs.audio.currentTime = 0
-          this.$refs.audio.play()
-        }
-        if (this.allowVibration && navigator.vibrate) {
-          navigator.vibrate(1500)
-        }
-      }
-      this.alarmWorker = setInterval(ring, 4000)
-      ring()
-    },
-    // [PRIVATE] terminates the alarmWorker (audio + vibration)
-    _stopAlarm: function () {
-      clearInterval(this.alarmWorker)
-      this.alarmWorker = null
-      this.$refs.audio.pause()
-      if (navigator.vibrate) {
-        navigator.vibrate(0)
-      }
-    },
-    // [PRIVATE] workaround to get browsers to play audio on mobile devices (requires user interaction to download sound file)
-    _preloadAudio () {
-      this.$refs.audio.play()
-      this.$refs.audio.pause()
+    // [PRIVATE] sends browser notification
+    _sendNotification: function (msg) {
     },
     // [PRIVATE] callback for WINDOW_RESIZE event, resizes the radialBar component for the new viewport dimension
     _handleResize (event) {
@@ -205,9 +181,6 @@ export default {
     }
   },
   created: function () {
-    // enable vibration support
-    navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate
-
     // bind event handlers to the `_handleResize` method
     window.addEventListener('resize', this._handleResize)
     this._handleResize()
