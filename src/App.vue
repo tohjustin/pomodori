@@ -1,59 +1,209 @@
 <template>
   <div id="app">
-    <header>
-      <span>Vue.js PWA</span>
-    </header>
-    <main>
-      <img src="./assets/logo.png" alt="Vue.js PWA">
-      <hello></hello>
-    </main>
+    <div class="MainView">
+      <div class="top">
+        <img class="logo" src="/static/img/logo.png" alt="Pomodori Logo">
+        <mu-icon-button v-on:click="switchToSettingsView" icon="settings"/>
+      </div>
+      <div class="middle">
+        <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="radialBarSize"/>
+      </div>
+      <div class="bottom">
+        <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
+        <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn"/>
+      </div>
+    </div>
+    <transition name="slide">
+      <div class="SettingsView" v-show="showSettingsView">
+        <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowNotification="allowNotification" v-on:change="switchToMainView"/>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
-import Hello from './components/Hello';
+import Vue from 'vue';
+import _ from 'lodash';
+import MuseUI from 'muse-ui';
+import 'muse-ui/dist/muse-ui.css';
+
+import radialBar from './components/radialBar';
+import settings from './components/SettingsView';
+import STATE from './modules/stateMachine';
+
+Vue.use(MuseUI);
 
 export default {
   name: 'app',
   components: {
-    Hello,
+    radialBar,
+    settings,
+  },
+  data() {
+    return {
+      // app State
+      timeRemaining: 1500,
+      state: STATE.WORK_START,
+      showSettingsView: false,
+      // app Settings
+      workDuration: 1500,
+      breakDuration: 300,
+      // allowNotification: true && !notificationHelper.isBlocked(),
+      allowNotification: true,
+      // worker objects for our timer
+      timerWorker: null,
+      alarmWorker: null,
+      // data used for responsiveness
+      radialBarSize: 300,
+      // variable to control timer speed
+      clockDelay: 1000,
+    };
+  },
+  computed: {
+    overlayText() {
+      return `${_.chain(this.timeRemaining / 60).floor().padStart(2, '0')}:${_.chain(this.timeRemaining % 60).padStart(2, '0')}`;
+    },
+    fractionOfTimeLeft() {
+      return (this.state.mode === 'work') ? (this.timeRemaining / this.workDuration) : (this.timeRemaining / this.breakDuration);
+    },
+    // computes the data of the primaryButton at any given [state]
+    primaryButton() {
+      const primaryBtn = {};
+      switch (this.state.status) {
+        case 'init': primaryBtn.text = 'START'; break;
+        case 'active': primaryBtn.text = 'STOP'; break;
+        case 'inactive': primaryBtn.text = 'RESUME'; break;
+        default:
+      }
+      primaryBtn.text += (this.state.mode === 'work') ? ' WORKING' : ' MY BREAK';
+      primaryBtn.bgColor = (this.state.mode === 'work') ? '#2196F3' : '#7CB342';
+      primaryBtn.callbackFn = (this.state.status === 'active') ?
+        () => { this.pauseTimer(); } :
+        () => { this.startTimer(); };
+      return primaryBtn;
+    },
+  },
+  methods: {
+    startTimer() {
+      this.state = STATE.START(this.state);
+
+      if (this.timerWorker === null) {
+        this.timerWorker = setInterval(() => {
+          this.timeRemaining -= 1;
+          if (this.timeRemaining <= 0) {
+            this.triggerAlarm();
+          }
+        }, this.clockDelay);
+      }
+    },
+    pauseTimer() {
+      this.clearTimeWorker();
+      this.state = STATE.PAUSE(this.state);
+    },
+    resetTimer() {
+      this.clearTimeWorker();
+      this.state = STATE.RESET(this.state);
+      this.timeRemaining = (this.state.mode === 'work') ? this.workDuration : this.breakDuration;
+    },
+    triggerAlarm() {
+      this.clearTimeWorker();
+      this.state = STATE.SWITCH(this.state);
+      this.timeRemaining = (this.state.mode === 'work') ? this.workDuration : this.breakDuration;
+    },
+    switchToSettingsView() {
+      this.pauseTimer();
+      this.showSettingsView = true;
+    },
+    switchToMainView(event) {
+      this.workDuration = event.workDuration;
+      this.breakDuration = event.breakDuration;
+      this.allowNotification = event.allowNotification;
+      this.resetTimer();
+      this.showSettingsView = false;
+    },
+    // [PRIVATE] terminates the timerWorker
+    clearTimeWorker() {
+      clearInterval(this.timerWorker);
+      this.timerWorker = null;
+    },
+    // [PRIVATE] helper method to access STATE object
+    getStateHelper() {
+      return STATE;
+    },
+    // [PRIVATE] sends browser notification
+    // _sendNotification(msg) {
+    // },
+    // [PRIVATE] callback for WINDOW_RESIZE event,
+    //           resizes the radialBar component for the new viewport dimension
+    handleResize() {
+      const paddingPercentage = 0.2;
+      const newRadialBarDivHeight = 0.75 * document.documentElement.clientHeight;
+      const newRadialBarDivWidth = document.documentElement.clientWidth;
+
+      this.radialBarSize =
+        _.min([newRadialBarDivHeight, newRadialBarDivWidth])
+        * (1 - paddingPercentage);
+    },
+  },
+  created() {
+    // bind event handlers to the `handleResize` method
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  // remove event handler before the component is destroyed
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
   },
 };
 </script>
 
-<style>
-body {
-  margin: 0;
-}
+<style lang="sass">
+#app
+  font-family: 'Roboto', Helvetica, Arial, sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
+.MainView .top
+  height: 10vh
+  padding: 2vh
+  display: flex
+  justify-content: space-between
+  .logo
+    width: auto
+    height: 24px
+    margin: 12px 10px
 
-main {
-  text-align: center;
-  margin-top: 40px;
-}
+.MainView .middle
+  height: 75vh
+  display: flex
+  justify-content: center
+  .radialBar
+    align-self: center
+    margin: auto
 
-header {
-  margin: 0;
-  height: 56px;
-  padding: 0 16px 0 24px;
-  background-color: #35495E;
-  color: #ffffff;
-}
+.MainView .bottom
+  height: 15vh
+  display: flex
+  justify-content: center
+  button
+    align-self: center
+    margin: 0 5px
+    font-weight: 500
+  .resetButton
+    color: #7cb342
 
-header span {
-  display: block;
-  position: relative;
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: .02em;
-  font-weight: 400;
-  box-sizing: border-box;
-  padding-top: 16px;
-}
+.SettingsView
+  height: 100vh
+  width: 100vw
+  position: absolute
+  top: 0px
+  left: 0px
+  z-index: 100
+  background-color: white
+
+// SettingsView Transition Styling
+.slide-enter-active, .slide-leave-active
+  transition: all 0.25s ease
+.slide-enter, .slide-leave-active
+  transform: translateX(100vw)
 </style>
