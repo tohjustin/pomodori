@@ -1,12 +1,12 @@
-import Vue from 'vue'
+import Vue from 'vue';
 
 /**
  * Destroys the input vue instance
  * @param  {Object} vm
  */
-exports.destroyVueInstance = function (vm) {
-  vm.$destroy()
-}
+const destroyVueInstance = (vm) => {
+  vm.$destroy();
+};
 
 /**
  * Helper function that mounts and returns the vue instance for testing
@@ -14,10 +14,16 @@ exports.destroyVueInstance = function (vm) {
  * @param  {Object}  Component      - component under testing
  * @param  {Object}  propsData      - props data
  */
-exports.mountComponent = function (Component, propsData) {
-  const Ctor = Vue.extend(Component)
+const mountComponent = (Component, propsData) => {
+  const Ctor = Vue.extend(Component);
   const vm = new Ctor({
-    propsData
-  }).$mount()
-  return vm
-}
+    propsData,
+  }).$mount();
+
+  return vm;
+};
+
+export default {
+  destroyVueInstance,
+  mountComponent,
+};
