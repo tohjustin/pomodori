@@ -115,7 +115,13 @@ describe('radialBar', () => {
       const overlayMargin = 40;
       const expectedResult = {
         radialBar: { height: `${size}px`, width: `${size}px` },
-        overlay: { height: `${overlaySize}px`, width: `${overlaySize}px`, 'line-height': `${overlaySize}px`, margin: `${overlayMargin}px`, 'font-size': `${overlayTextSize}px` },
+        overlay: {
+          height: `${overlaySize}px`,
+          width: `${overlaySize}px`,
+          lineHeight: `${overlaySize}px`,
+          margin: `${overlayMargin}px`,
+          fontSize: `${overlayTextSize}px`,
+        },
       };
 
       // Set [size] prop to 1000
