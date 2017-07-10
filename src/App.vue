@@ -32,6 +32,7 @@ import settings from './components/SettingsView';
 
 import notifications from './modules/notifications';
 import STATE from './modules/stateMachine';
+import storage from './modules/storage';
 
 Vue.use(MuseUI);
 
@@ -154,13 +155,33 @@ export default {
         * (1 - paddingPercentage);
     },
   },
-  created() {
-    // Request for permission to send local notifications
-    notifications.requestPermission();
-
-    // bind event handlers to the `handleResize` method
+  mounted() {
+    // Listener to resize our radialBar when user changes the browser window size
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
+
+    // Configure storage settings (required by localforage)
+    storage.configStorage();
+
+    // Load user settings from storage module
+    storage.loadSettings()
+      .then((userSettings) => {
+        if (!_.isNull(userSettings)) {
+          const { workDuration, breakDuration, allowNotification } = userSettings;
+          this.workDuration = workDuration;
+          this.breakDuration = breakDuration;
+          this.allowNotification = allowNotification;
+
+          // Update `timeRemaining` if our loaded `workDuration` has a smaller value
+          if (workDuration < this.timeRemaining) {
+            this.timeRemaining = workDuration;
+          }
+        }
+      })
+      .catch(() => {});
+
+    // Request for permission to send local notifications
+    notifications.requestPermission();
   },
   // remove event handler before the component is destroyed
   beforeDestroy() {
