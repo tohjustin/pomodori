@@ -47,6 +47,11 @@ export default {
       myAllowNotification: this.allowNotification,
     };
   },
+  watch: {
+    workDuration(newValue) { this.myWorkDuration = newValue; },
+    breakDuration(newValue) { this.myBreakDuration = newValue; },
+    allowNotification(newValue) { this.myAllowNotification = newValue; },
+  },
   computed: {
     disableNotificationSetting() {
       return !notifications.supported() || notifications.isBlocked();
