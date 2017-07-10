@@ -6,16 +6,38 @@
         <mu-icon-button v-on:click="switchToSettingsView" icon="settings"/>
       </div>
       <div class="middle">
-        <radialBar :fraction="fractionOfTimeLeft" :overlayText="overlayText" :strokeColor="primaryButton.bgColor" trailColor="#ABABAB" :size="radialBarSize"/>
+        <radialBar
+          :fraction="fractionOfTimeLeft"
+          :overlayText="overlayText"
+          :size="radialBarSize"
+          :strokeColor="primaryButton.bgColor"
+          trailColor="#ABABAB"
+        />
       </div>
       <div class="bottom">
-        <mu-raised-button label="RESET" :color="primaryButton.bgColor" class="resetButton" v-on:click="resetTimer"/>
-        <mu-raised-button :label="primaryButton.text" :backgroundColor="primaryButton.bgColor" class="primaryButton" v-on:click="primaryButton.callbackFn"/>
+        <mu-raised-button
+          v-on:click="resetTimer"
+          label="RESET"
+          :color="primaryButton.bgColor"
+          class="resetButton"
+        />
+        <mu-raised-button
+          v-on:click="primaryButton.callbackFn"
+          :label="primaryButton.text"
+          :backgroundColor="primaryButton.bgColor"
+          class="primaryButton"
+        />
       </div>
     </div>
     <transition name="slide">
       <div class="SettingsView" v-show="showSettingsView">
-        <settings ref="settings" :workDuration="workDuration" :breakDuration="breakDuration" :allowNotification="allowNotification" v-on:change="switchToMainView"/>
+        <settings
+          ref="settings"
+          v-on:change="switchToMainView"
+          :allowNotification="allowNotification"
+          :breakDuration="breakDuration"
+          :workDuration="workDuration"
+        />
       </div>
     </transition>
   </div>
