@@ -130,9 +130,6 @@ export default {
     getStateHelper() {
       return STATE;
     },
-    // [PRIVATE] sends browser notification
-    // _sendNotification(msg) {
-    // },
     // [PRIVATE] callback for WINDOW_RESIZE event,
     //           resizes the radialBar component for the new viewport dimension
     handleResize() {
