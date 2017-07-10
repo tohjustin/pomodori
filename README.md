@@ -1,7 +1,7 @@
 <p align="center">
-  <a href="https://pomodori-pwa.firebaseapp.com/" target="_blank"><img src="https://github.com/tohjustin/pomodori/blob/master/static/icons/icon-192x192.png"></a>
+  <a href="https://pomodori-pwa.firebaseapp.com/" target="_blank"><img src="https://github.com/tohjustin/pomodori/blob/master/static/img/icons/icon-192x192.png"></a>
   <br>
-  <a href="https://pomodori-pwa.firebaseapp.com/" target="_blank"><img height="50" src="https://github.com/tohjustin/pomodori/blob/master/static/logo.png"></a>
+  <a href="https://pomodori-pwa.firebaseapp.com/" target="_blank"><img height="50" src="https://github.com/tohjustin/pomodori/blob/master/static/img/logo.png"></a>
 </p>
 <p align="center">
   <a href="https://circleci.com/gh/tohjustin/pomodori/tree/master"><img src="https://circleci.com/gh/tohjustin/pomodori/tree/master.svg?style=shield" alt="CircleCI Build Status"/></a>
