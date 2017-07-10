@@ -172,10 +172,8 @@ export default {
           this.breakDuration = breakDuration;
           this.allowNotification = allowNotification;
 
-          // Update `timeRemaining` if our loaded `workDuration` has a smaller value
-          if (workDuration < this.timeRemaining) {
-            this.timeRemaining = workDuration;
-          }
+          // Update `timeRemaining` to newly loaded `workDuration`
+          this.timeRemaining = workDuration;
         }
       })
       .catch(() => {});
