@@ -26,6 +26,10 @@
 - [npm](https://docs.npmjs.com/getting-started/installing-node)
 - [Yarn](https://yarnpkg.com/en/docs/install#mac-tab) (optional, alternative to npm)
 
+(Optional) If you want to test the build files locally (via `npm run serve`):
+- [Python](https://www.python.org/)
+- [Flask](http://flask.pocoo.org/)
+
 ## Installation
 
 ``` bash
@@ -43,17 +47,17 @@ npm run dev
 # build for production with minification
 npm run build
 
+# run eslint
+npm run lint
+
+# build for production with minification + serve build at localhost:5000 (Flask server)
+npm run serve
+
 # run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
 npm test
 ```
 
-This project's build setup is scaffolded by the [vue-cli](https://github.com/vuejs/vue-cli) project. For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+This project's build setup is scaffolded by the [vue-cli](https://github.com/vuejs/vue-cli) project. For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for pwa-template](https://github.com/vuejs-templates/pwa).
 
 
 ## License
