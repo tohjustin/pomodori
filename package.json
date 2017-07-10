@@ -1,6 +1,6 @@
 {
   "name": "pomodoro-timer-pwa",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Pomodoro Timer as a Progressive Web App (PWA)",
   "author": "Justin Toh <tohjustin@hotmail.com>",
   "private": true,
