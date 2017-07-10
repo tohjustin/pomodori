@@ -155,6 +155,9 @@ export default {
     },
   },
   created() {
+    // Request for permission to send local notifications
+    notifications.requestPermission();
+
     // bind event handlers to the `handleResize` method
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
