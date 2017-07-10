@@ -29,6 +29,7 @@ import MuseUI from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
 
 import notifications from '../modules/notifications';
+import storage from '../modules/storage';
 
 Vue.use(MuseUI);
 
@@ -70,6 +71,7 @@ export default {
         allowNotification: this.myAllowNotification,
       };
       this.$emit('change', settings);
+      storage.saveSettings(settings);
     },
   },
   filters: {
