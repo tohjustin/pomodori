@@ -1,7 +1,7 @@
 // Configuration Data
 const vibratePattern = [100, 50, 100, 50, 100];
 const notificationTag = 'pomodori-notification';
-const notificationIcon = '/static/icons/icon-192x192.png';
+const notificationIcon = '/static/img/icons/icon-192x192.png';
 const renotifyOption = 'true';
 
 const supported = () => ('Notification' in window && window.Notification !== undefined);
