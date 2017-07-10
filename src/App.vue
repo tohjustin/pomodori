@@ -29,6 +29,8 @@ import 'muse-ui/dist/muse-ui.css';
 
 import radialBar from './components/radialBar';
 import settings from './components/SettingsView';
+
+import notifications from './modules/notifications';
 import STATE from './modules/stateMachine';
 
 Vue.use(MuseUI);
@@ -48,7 +50,7 @@ export default {
       // app Settings
       workDuration: 1500,
       breakDuration: 300,
-      // allowNotification: true && !notificationHelper.isBlocked(),
+      // allowNotification: true && !notifications.isBlocked(),
       allowNotification: true,
       // worker objects for our timer
       timerWorker: null,
@@ -109,6 +111,16 @@ export default {
       this.clearTimeWorker();
       this.state = STATE.SWITCH(this.state);
       this.timeRemaining = (this.state.mode === 'work') ? this.workDuration : this.breakDuration;
+      const startBreakMessage = { title: 'Stop working already!', body: 'Time to start your break...' };
+      const backToWorkMessage = { title: 'Your break is over!', body: 'Time to get back to work...' };
+
+      if (this.allowNotification === true) {
+        notifications.requestPermission();
+        notifications.sendNotification(
+          (this.state.mode === 'work') ? backToWorkMessage.title : startBreakMessage.title,
+          (this.state.mode === 'work') ? backToWorkMessage.body : startBreakMessage.body,
+        );
+      }
     },
     switchToSettingsView() {
       this.pauseTimer();
