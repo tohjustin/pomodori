@@ -10,7 +10,8 @@ deployment:
   production:
     branch: master
     commands:
-      - npm install -g firebase-tools
-      - npm run build
+      - yarn install -g firebase-tools
+      - yarn run build
+      - cp docs/lighthouseReport.html dist/lighthouseReport.html
       - firebase use $FIREBASE_PRODUCTION_ID --token=$FIREBASE_PRODUCTION_TOKEN --non-interactive
       - firebase deploy --token=$FIREBASE_PRODUCTION_TOKEN --non-interactive
