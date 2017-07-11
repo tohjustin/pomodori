@@ -2,7 +2,13 @@
   <div id="app">
     <div class="MainView">
       <div class="top">
-        <img class="logo" src="/static/img/logo.png" alt="Pomodori Logo">
+        <img
+          alt="Pomodori Logo"
+          class="logo"
+          src="/static/img/logo.png"
+          v-on:mousedown="fastForwardTime"
+          v-on:mouseup="resetClockDelay"
+        >
         <mu-icon-button v-on:click="switchToSettingsView" icon="settings"/>
       </div>
       <div class="middle">
@@ -58,6 +64,9 @@ import storage from './modules/storage';
 
 Vue.use(MuseUI);
 
+const CLOCK_DELAY = 1000;
+const FAST_FORWARD_TIME_DELAY = 1;
+
 export default {
   name: 'app',
   components: {
@@ -80,8 +89,6 @@ export default {
       alarmWorker: null,
       // data used for responsiveness
       radialBarSize: 300,
-      // variable to control timer speed
-      clockDelay: 1000,
     };
   },
   computed: {
@@ -118,7 +125,7 @@ export default {
           if (this.timeRemaining <= 0) {
             this.triggerAlarm();
           }
-        }, this.clockDelay);
+        }, CLOCK_DELAY);
       }
     },
     pauseTimer() {
@@ -175,6 +182,24 @@ export default {
       this.radialBarSize =
         _.min([newRadialBarDivHeight, newRadialBarDivWidth])
         * (1 - paddingPercentage);
+    },
+    fastForwardTime() {
+      this.clearTimeWorker();
+      this.timerWorker = setInterval(() => {
+        this.timeRemaining -= 1;
+        if (this.timeRemaining <= 0) {
+          this.triggerAlarm();
+        }
+      }, FAST_FORWARD_TIME_DELAY);
+    },
+    resetClockDelay() {
+      this.clearTimeWorker();
+      this.timerWorker = setInterval(() => {
+        this.timeRemaining -= 1;
+        if (this.timeRemaining <= 0) {
+          this.triggerAlarm();
+        }
+      }, CLOCK_DELAY);
     },
   },
   mounted() {
