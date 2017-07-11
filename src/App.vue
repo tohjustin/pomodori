@@ -82,8 +82,7 @@ export default {
       // app Settings
       workDuration: 1500,
       breakDuration: 300,
-      // allowNotification: true && !notifications.isBlocked(),
-      allowNotification: true,
+      allowNotification: true && !notifications.isBlocked(),
       // worker objects for our timer
       timerWorker: null,
       alarmWorker: null,
@@ -217,7 +216,7 @@ export default {
           const { workDuration, breakDuration, allowNotification } = userSettings;
           this.workDuration = workDuration;
           this.breakDuration = breakDuration;
-          this.allowNotification = allowNotification;
+          this.allowNotification = allowNotification && !notifications.isBlocked();
 
           // Update `timeRemaining` to newly loaded `workDuration`
           this.timeRemaining = workDuration;
