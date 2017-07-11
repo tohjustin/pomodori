@@ -5,9 +5,10 @@
 </p>
 <p align="center">
   <a href="https://circleci.com/gh/tohjustin/pomodori/tree/master"><img src="https://circleci.com/gh/tohjustin/pomodori/tree/master.svg?style=shield" alt="CircleCI Build Status"/></a>
+  <a href="https://github.com/tohjustin/pomodori/releases/tag/v2.1.0"><img src="https://img.shields.io/github/release/tohjustin/pomodori.svg" alt="Release Version"/></a>
   <a href="https://codecov.io/gh/tohjustin/pomodori"><img src="https://codecov.io/gh/tohjustin/pomodori/branch/master/graph/badge.svg" alt="Codecov" /></a>
   <a href="https://www.codacy.com/app/tohjustin/pomodori?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tohjustin/pomodori&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/ab08c87aa6a3467496591b87ad77f8e8"/></a>
-  <a href="https://github.com/tohjustin/pomodori/blob/master/docs/LighthouseReport.pdf"><img src="https://img.shields.io/badge/lighthouse-100%2F100-ff69b4.svg"/></a>
+  <a href="https://pomodori-pwa.firebaseapp.com/lighthouseReport.html"><img src="https://img.shields.io/badge/lighthouse-100%2F100-ff69b4.svg"/></a>
   <a href="https://github.com/tohjustin/pomodori/blob/master/LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg"/></a>
 </p>
 <p align="center">
