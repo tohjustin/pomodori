@@ -560,6 +560,57 @@ describe('App', () => {
       vm.switchToMainView({ workDuration: 1, breakDuration: 1, allowNotification: false });
       expect(vm.showSettingsView).to.equal(false);
     });
+
+    it('[fastForwardTime] decrements [timeRemaining] every millisecond', () => {
+      const CLOCK = sinon.useFakeTimers();
+      // Initialize component properties/variables
+      vm.timeRemaining = 10;
+      vm.workDuration = 20;
+      vm.breakDuration = 10;
+      vm.state = STATE.WORK_START;
+      vm.timerWorker = null;
+
+      // Begin Test
+      vm.startTimer();
+      CLOCK.tick(5);
+      expect(vm.state).to.deep.equal(STATE.WORK);
+      expect(vm.timeRemaining).to.equal(10);
+      expect(vm.timerWorker).to.not.equal(null);
+
+      vm.fastForwardTime();
+      CLOCK.tick(5);
+      expect(vm.state).to.deep.equal(STATE.WORK);
+      expect(vm.timeRemaining).to.equal(5);
+      expect(vm.timerWorker).to.not.equal(null);
+
+      CLOCK.restore();
+    });
+
+    it('[resetClockDelay] resets clock delay altered by [fastForwardTime]', () => {
+      const CLOCK = sinon.useFakeTimers();
+      // Initialize component properties/variables
+      vm.timeRemaining = 10;
+      vm.workDuration = 20;
+      vm.breakDuration = 10;
+      vm.state = STATE.WORK_START;
+      vm.timerWorker = null;
+
+      // Begin Test
+      vm.startTimer();
+      vm.fastForwardTime();
+      CLOCK.tick(5);
+      expect(vm.state).to.deep.equal(STATE.WORK);
+      expect(vm.timeRemaining).to.equal(5);
+      expect(vm.timerWorker).to.not.equal(null);
+
+      vm.resetClockDelay();
+      CLOCK.tick(3000);
+      expect(vm.state).to.deep.equal(STATE.WORK);
+      expect(vm.timeRemaining).to.equal(2);
+      expect(vm.timerWorker).to.not.equal(null);
+
+      CLOCK.restore();
+    });
   });
 
   describe('Test Child Components', () => {
