@@ -10,7 +10,7 @@ deployment:
   production:
     branch: master
     commands:
-      - yarn install -g firebase-tools
+      - yarn global add firebase-tools
       - yarn run build
       - cp docs/lighthouseReport.html dist/lighthouseReport.html
       - firebase use $FIREBASE_PRODUCTION_ID --token=$FIREBASE_PRODUCTION_TOKEN --non-interactive
