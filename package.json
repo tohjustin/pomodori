@@ -16,7 +16,8 @@
     "localforage": "^1.5.0",
     "lodash": "^4.17.4",
     "muse-ui": "^2.1.0",
-    "vue": "^2.3.3"
+    "vue": "^2.3.3",
+    "vue-touch": "next"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
