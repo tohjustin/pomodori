@@ -2,13 +2,14 @@
   <div id="app">
     <div class="MainView">
       <div class="top">
-        <img
-          alt="Pomodori Logo"
-          class="logo"
-          src="/static/img/logo.png"
-          v-on:mousedown="fastForwardTime"
-          v-on:mouseup="resetClockDelay"
+        <!-- overlay to register touch events (in order to bypass right click behaviour on images in mobile) -->
+        <v-touch
+          class="logo-overlay"
+          v-on:press="fastForwardTime"
+          v-on:pressup="resetClockDelay"
         >
+        </v-touch>
+        <img alt="Pomodori Logo" class="logo" src="/static/img/logo.png">
         <mu-icon-button v-on:click="switchToSettingsView" icon="settings"/>
       </div>
       <div class="middle">
@@ -51,6 +52,7 @@
 
 <script>
 import Vue from 'vue';
+import VueTouch from 'vue-touch';
 import _ from 'lodash';
 import MuseUI from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
@@ -63,6 +65,7 @@ import STATE from './modules/stateMachine';
 import storage from './modules/storage';
 
 Vue.use(MuseUI);
+Vue.use(VueTouch, { name: 'v-touch' });
 
 const CLOCK_DELAY = 1000;
 const FAST_FORWARD_TIME_DELAY = 1;
@@ -249,6 +252,13 @@ export default {
     width: auto
     height: 24px
     margin: 12px 10px
+  .logo-overlay
+    position: absolute
+    top: 0
+    left: 0
+    height: 48px
+    width: 175px
+    margin: 2vh
 
 .MainView .middle
   height: 75vh
