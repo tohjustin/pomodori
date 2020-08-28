@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "localforage": "^1.5.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.17",
     "muse-ui": "^2.1.0",
     "vue": "^2.3.3",
     "vue-touch": "next"
